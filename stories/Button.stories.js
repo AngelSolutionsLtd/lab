@@ -11,27 +11,25 @@ export default {
     template: '<my-button @onClick="onClick" v-bind="$props" />',
   }),
   argTypes: {
-    backgroundColor: { control: 'color' },
+    btnColor: { 
+      control: { type: 'select' },
+      options: ['primary','secondary','tertiary', 'quaternary', 'positive', 'negative']
+    },
     size: {
       control: { type: 'select' },
-      options: ['small', 'medium', 'large'],
-    },
+      options: ['small', 'large', 'huge', 'full'],
+    } 
   },
 };
 
 // More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
-export const Primary = {
+export const Small = {
   args: {
-    primary: true,
+    size: 'small',
     label: 'Button',
   },
 };
 
-export const Secondary = {
-  args: {
-    label: 'Button',
-  },
-};
 export const Large = {
   args: {
     size: 'large',
@@ -39,9 +37,16 @@ export const Large = {
   },
 };
 
-export const Small = {
+export const Huge = {
   args: {
-    size: 'small',
+    size: 'huge',
+    label: 'Button',
+  },
+};
+
+export const Full = {
+  args: {
+    size: 'full',
     label: 'Button',
   },
 };

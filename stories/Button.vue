@@ -1,5 +1,5 @@
 <template>
-  <button type="button" :class="classes" @click="onClick" :style="style">{{ label }}</button>
+  <button type="button" :class="classes" @click="onClick">{{ label }}</button>
 </template>
 
 <script>
@@ -13,38 +13,43 @@ export default {
       type: String,
       required: true,
     },
-    primary: {
-      type: Boolean,
-      default: false,
-    },
     size: {
       type: String,
-      default: 'medium',
+      default: 'small',
       validator: function (value) {
-        return ['small', 'medium', 'large'].indexOf(value) !== -1;
+        return ['small', 'large', 'huge', 'full'].indexOf(value) !== -1;
       },
     },
-    backgroundColor: {
+    btnColor: {
       type: String,
+      default: 'primary',
+      validator: function (value) {
+        return ['primary','secondary','tertiary', 'quaternary', 'positive', 'negative'].indexOf(value) !== -1;
+      },
     },
+    inverted: {
+      type: Boolean,
+      default: false
+    }
   },
 
   computed: {
     classes() {
       return {
-        'storybook-button': true,
-        'storybook-button--primary': this.primary,
-        'storybook-button--secondary': !this.primary,
-        [`storybook-button--${this.size}`]: true,
+        'btn': true,
+        [`btn--${this.size}`]: true,
+        [`${this.btnColor !== 'primary' ? `btn--${this.btnColor}` : 'btn'}--inverted`]: this.inverted,
+        [`${this.default}`]: true
       };
     },
-    style() {
-      return {
-        backgroundColor: this.backgroundColor,
-      };
-    },
+    default() {
+      if (this.btnColor != 'primrary' && !this.inverted) {
+        return `btn--${this.btnColor}`
+      } else {
+        return ''
+      }
+    }
   },
-
   methods: {
     onClick() {
       this.$emit('onClick');
