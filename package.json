@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@storybook/theming": "^8.1.4",
     "storybook": "^7.6.19"
   },
   "devDependencies": {
