@@ -5,6 +5,8 @@
 <script>
 // import './button.css';
 
+import '../fonts/style.css';
+
 export default {
   name: 'my-button',
 
