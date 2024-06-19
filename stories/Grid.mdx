@@ -1,0 +1,513 @@
+import { Meta } from '@storybook/blocks';
+
+<Meta title="Design/Grid" />
+
+# Grid
+
+<div className="section d-block py-3">
+  <div className="row no-gutters">
+    <div className="col-md-12">
+      This grid system is based off Bootstrap 4 grid system and uses a series of rows, and columns to layout
+      and align content. It's built with flexbox and is fully responsive. Below is an example and an in-depth
+      look at how the grid comes together.
+    </div>
+  </div>
+</div>
+
+## Grid Options
+
+<div className="section d-block py-3">
+  <div className="row no-gutters">
+    <div className="col-md-12">
+      See how aspects of the grid system work across multiple devices.
+    </div>
+    <div className="col-md-12">
+      <table className="table table-bordered table-striped">
+        <thead>
+          <tr>
+            <th></th>
+            <th className="text-center">
+              Extra small<br />
+              <small>&lt;576px</small>
+            </th>
+            <th className="text-center">
+              Small<br />
+              <small>≥576px</small>
+            </th>
+            <th className="text-center">
+              Medium<br />
+              <small>≥768px</small>
+            </th>
+            <th className="text-center">
+              Large<br />
+              <small>≥992px</small>
+            </th>
+            <th className="text-center">
+              Extra large<br />
+              <small>≥1200px</small>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th className="text-nowrap" scope="row">Max container width</th>
+            <td>None (auto)</td>
+            <td>540px</td>
+            <td>720px</td>
+            <td>960px</td>
+            <td>1140px</td>
+          </tr>
+          <tr>
+            <th className="text-nowrap" scope="row">className prefix</th>
+            <td><code>.col-</code></td>
+            <td><code>.col-sm-</code></td>
+            <td><code>.col-md-</code></td>
+            <td><code>.col-lg-</code></td>
+            <td><code>.col-xl-</code></td>
+          </tr>
+          <tr>
+            <th className="text-nowrap" scope="row"># of columns</th>
+            <td colSpan="5">12</td>
+          </tr>
+          <tr>
+            <th className="text-nowrap" scope="row">Gutter width</th>
+            <td colSpan="5">30px (15px on each side of a column)</td>
+          </tr>
+          <tr>
+            <th className="text-nowrap" scope="row">Nestable</th>
+            <td colSpan="5">Yes</td>
+          </tr>
+          <tr>
+            <th className="text-nowrap" scope="row">Column ordering</th>
+            <td colSpan="5">Yes</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+## Columns
+
+<div className="section d-block py-3">
+  <div className="row no-gutters">
+    <div className="col-md-12">
+      Below is an example of a simple 3 column grid. As we are not specifying a breakpoint with each className,
+      these columns would remain as 3 regardless of the viewport.
+    </div>
+
+    <div className="bd-example">
+      <div className="container">
+        <div className="row">
+          <div className="col-sm">One of three columns</div>
+          <div className="col-sm">One of three columns</div>
+          <div className="col-sm">One of three columns</div>
+        </div>
+      </div>
+    </div>
+
+    ```html
+    <div class="row">
+      <div class="col-3">
+        One of three columns
+      </div>
+      <div class="col-3">
+        One of three columns
+      </div>
+      <div class="col-3">
+        One of three columns
+      </div>
+    </div>
+    ```
+  </div>
+</div>
+
+## Responsive Columns
+
+<div className="section d-block py-3">
+  <div className="row no-gutters">
+    <div className="col-md-12">
+      Now, if we want these columns to change at different breakpoints we would use the breakpoint prefix
+      classNamees as shown in [grid options](#grid-options) table above.
+    </div>
+
+    <div className="bd-example">
+      <div className="container">
+        <div className="row">
+          <div className="col-xs-12 col-sm-6 col-lg-4">One of three columns</div>
+          <div className="col-xs-12 col-sm-6 col-lg-4">One of three columns</div>
+          <div className="col-xs-12 col-sm-6 col-lg-4">One of three columns</div>
+        </div>
+      </div>
+    </div>
+
+    ```jsx
+    <div class="row">
+      <div class="col-xs-12 col-sm-6 col-lg-4">
+        One of three columns
+      </div>
+      <div class="col-xs-12 col-sm-6 col-lg-4">
+        One of three columns
+      </div>
+      <div class="col-xs-12 col-sm-6 col-lg-4">
+        One of three columns
+      </div>
+    </div>
+    ```
+  </div>
+</div>
+
+## Auto Columns
+
+<div className="section d-block py-3">
+  <div className="row no-gutters">
+    <div className="col-md-12">
+      <div className="bd-example">
+        <div className="container">
+          <div className="row">
+            <div className="col-sm-4 col-md-2">Col</div>
+            <div className="col">Auto Column</div>
+            <div className="col-sm-4 col-md-2">Col</div>
+          </div>
+        </div>
+      </div>
+
+      ```jsx
+      <div class="row">
+        <div class="col-sm-4 col-md-2">
+          Col
+        </div>
+        <div class="col">
+          Auto Column
+        </div>
+        <div class="col-sm-4 col-md-2">
+          Col
+        </div>
+      </div>
+      ```
+      
+      Auto-layout for flexbox grid columns also means you can set the width of one column and have the sibling
+      columns automatically resize around it. You may use predefined grid classNamees (as shown above), grid mixins,
+      or inline widths. Note that the other columns will resize no matter the width of the center column.
+    </div>
+  </div>
+</div>
+
+## Vertical Alignment
+
+<div className="section d-block py-3">
+    <div className="row no-gutters">
+        <div className="col-md-12">
+            Use flexbox alignment utilities to vertically and horizontally align columns.
+            <div className="bd-example-two mt-4">
+                <div className="container">
+                    <div className="row align-items-start">
+                        <div className="col-sm">One of three columns</div>
+                        <div className="col-sm">One of three columns</div>
+                        <div className="col-sm">One of three columns</div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="bd-example-two mt-4">
+                <div className="container">
+                    <div className="row align-items-center">
+                        <div className="col-sm">One of three columns</div>
+                        <div className="col-sm">One of three columns</div>
+                        <div className="col-sm">One of three columns</div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="bd-example-two mt-4">
+                <div className="container">
+                    <div className="row align-items-end">
+                        <div className="col-sm">One of three columns</div>
+                        <div className="col-sm">One of three columns</div>
+                        <div className="col-sm">One of three columns</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div className="section d-block py-3">
+    <div className="row no-gutters">
+        <div className="col-md-12">
+
+            ```html
+            <div class="container">
+                <div class="row align-items-start">
+                    <div class="col-sm">One of three columns</div>
+                    <div class="col-sm">One of three columns</div>
+                    <div class="col-sm">One of three columns</div>
+                </div>
+
+                <div class="row align-items-center">
+                    <div class="col-sm">One of three columns</div>
+                    <div class="col-sm">One of three columns</div>
+                    <div class="col-sm">One of three columns</div>
+                </div>
+
+                <div class="row align-items-end">
+                    <div class="col-sm">One of three columns</div>
+                    <div class="col-sm">One of three columns</div>
+                    <div class="col-sm">One of three columns</div>
+                </div>
+            </div>
+            ```
+        </div>
+    </div>
+</div>
+
+
+## Horizontal Alignment
+
+<div className="section d-block py-3">
+    <div className="row no-gutters">
+        <div className="col-md-12">
+            <div className="bd-example">
+                <div className="container">
+                    <div className="row justify-content-start">
+                      <div className="col-4">
+                        One of two columns
+                      </div>
+                      <div className="col-4">
+                        One of two columns
+                      </div>
+                    </div>
+                    <div className="row justify-content-center">
+                      <div className="col-4">
+                        One of two columns
+                      </div>
+                      <div className="col-4">
+                        One of two columns
+                      </div>
+                    </div>
+                    <div className="row justify-content-end">
+                      <div className="col-4">
+                        One of two columns
+                      </div>
+                      <div className="col-4">
+                        One of two columns
+                      </div>
+                    </div>
+                    <div className="row justify-content-around">
+                      <div className="col-4">
+                        One of two columns
+                      </div>
+                      <div className="col-4">
+                        One of two columns
+                      </div>
+                    </div>
+                    <div className="row justify-content-between">
+                      <div className="col-4">
+                        One of two columns
+                      </div>
+                      <div className="col-4">
+                        One of two columns
+                      </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div className="section d-block py-3">
+    <div className="row no-gutters">
+        <div className="col-md-12">
+            ```html
+                <div class="container">
+                    <div class="row justify-content-start">
+                      <div class="col-4">
+                        One of two columns
+                      </div>
+                      <div class="col-4">
+                        One of two columns
+                      </div>
+                    </div>
+                    <div class="row justify-content-center">
+                      <div class="col-4">
+                        One of two columns
+                      </div>
+                      <div class="col-4">
+                        One of two columns
+                      </div>
+                    </div>
+                    <div class="row justify-content-end">
+                      <div class="col-4">
+                        One of two columns
+                      </div>
+                      <div class="col-4">
+                        One of two columns
+                      </div>
+                    </div>
+                    <div class="row justify-content-around">
+                      <div class="col-4">
+                        One of two columns
+                      </div>
+                      <div class="col-4">
+                        One of two columns
+                      </div>
+                    </div>
+                    <div class="row justify-content-between">
+                      <div class="col-4">
+                        One of two columns
+                      </div>
+                      <div class="col-4">
+                        One of two columns
+                      </div>
+                    </div>
+                </div>
+            ```							
+        </div>
+    </div>
+</div>
+
+## Utilities
+
+
+<div className="section d-block py-3">
+    <div className="row">
+        <div className="col-md-12">
+            Change the value of the display property with our responsive display utility classes. We purposely support only a subset of all possible values for display. Classes can be combined for various effects as you need.
+
+            Display utility classes that apply to all breakpoints, from <code className="highlighter-rouge">xs</code> to <code className="highlighter-rouge">xl</code>, have no breakpoint abbreviation in them. This is because those classes are applied from <code className="highlighter-rouge">min-width: 0;</code> and up, and thus are not bound by a media query. The remaining breakpoints, however, do include a breakpoint abbreviation.
+
+            As such, the classes are named using the format:
+
+            <ul>
+                <li><code className="highlighter-rouge">.d-{'{'}value{'}'}</code> for <code className="highlighter-rouge">xs</code></li>
+                <li><code className="highlighter-rouge">.d-{'{'}breakpoint{'}'}-{'{'}value{'}'}</code> for <code className="highlighter-rouge">sm</code>, <code className="highlighter-rouge">md</code>, <code className="highlighter-rouge">lg</code>, and <code className="highlighter-rouge">xl</code>.</li>
+              </ul>
+              
+
+              Where <em>value</em> is one of:
+
+              <ul>
+                <li><code className="highlighter-rouge">none</code></li>
+                <li><code className="highlighter-rouge">inline</code></li>
+                <li><code className="highlighter-rouge">inline-block</code></li>
+                <li><code className="highlighter-rouge">block</code></li>
+                <li><code className="highlighter-rouge">table</code></li>
+                <li><code className="highlighter-rouge">table-cell</code></li>
+                <li><code className="highlighter-rouge">table-row</code></li>
+                <li><code className="highlighter-rouge">flex</code></li>
+                <li><code className="highlighter-rouge">inline-flex</code></li>
+              </ul>
+
+              <div className="bd-example">
+                <div className="container">
+                    <div className="row align-items-end">
+                        <div className="col-4 d-none d-md-block">One of three columns</div>
+                        <div className="col-4 d-lg-none">One of three columns</div>
+                        <div className="col-4 d-none d-md-block">One of three columns</div>
+                    </div>
+                </div>
+            </div>
+
+            ```html
+            <div class="container">
+                <div class="row align-items-end">
+                    <div class="col-4 d-none d-md-block">One of three columns</div>
+                    <div class="col-4 d-lg-none">One of three columns</div>
+                    <div class="col-4 d-none d-md-block">One of three columns</div>
+                </div>
+            </div>
+            ```		
+
+            The example above will toggle the display of the middle column until the <code class="highlighter-rouge">lg</code> breakpoint.														  
+        </div>
+    </div>
+
+    <table className="table table-bordered table-striped">
+        <thead>
+          <tr>
+            <th>Screen Size</th>
+            <th>className</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Hidden on all</td>
+            <td><code className="highlighter-rouge">.d-none</code></td>
+          </tr>
+          <tr>
+            <td>Hidden only on xs</td>
+            <td><code className="highlighter-rouge">.d-none .d-sm-block</code></td>
+          </tr>
+          <tr>
+            <td>Hidden only on sm</td>
+            <td><code className="highlighter-rouge">.d-sm-none .d-md-block</code></td>
+          </tr>
+          <tr>
+            <td>Hidden only on md</td>
+            <td><code className="highlighter-rouge">.d-md-none .d-lg-block</code></td>
+          </tr>
+          <tr>
+            <td>Hidden only on lg</td>
+            <td><code className="highlighter-rouge">.d-lg-none .d-xl-block</code></td>
+          </tr>
+          <tr>
+            <td>Hidden only on xl</td>
+            <td><code className="highlighter-rouge">.d-xl-none</code></td>
+          </tr>
+          <tr>
+            <td>Visible on all</td>
+            <td><code className="highlighter-rouge">.d-block</code></td>
+          </tr>
+          <tr>
+            <td>Visible only on xs</td>
+            <td><code className="highlighter-rouge">.d-block .d-sm-none</code></td>
+          </tr>
+          <tr>
+            <td>Visible only on sm</td>
+            <td><code className="highlighter-rouge">.d-none .d-sm-block .d-md-none</code></td>
+          </tr>
+          <tr>
+            <td>Visible only on md</td>
+            <td><code className="highlighter-rouge">.d-none .d-md-block .d-lg-none</code></td>
+          </tr>
+          <tr>
+            <td>Visible only on lg</td>
+            <td><code className="highlighter-rouge">.d-none .d-lg-block .d-xl-none</code></td>
+          </tr>
+          <tr>
+            <td>Visible only on xl</td>
+            <td><code className="highlighter-rouge">.d-none .d-xl-block</code></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+
+<style>
+    {`
+    
+.bd-example, .bd-example-two {
+    background: #F0F0F0;
+    margin-top: 40px;
+}
+.bd-example{
+    min-height: 150px;
+}
+.container {
+    background: inherit;
+}
+
+.bd-example .container .row {
+    height: auto;
+}
+.bd-example-two .container .row {
+    height: 150px;
+}
+.bd-example .row > *, .bd-example-two .row > * {
+    border: 1px solid #B0B0B0;
+    background: #E0E0E0;
+    padding: 10px;
+    box-sizing: border-box;
+}
+`}
+</style>
