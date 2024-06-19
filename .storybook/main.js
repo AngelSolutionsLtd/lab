@@ -1,8 +1,8 @@
 /** @type { import('@storybook/vue-webpack5').StorybookConfig } */
 const config = {
   stories: [
+    "../stories/Welcome.mdx",
     "../stories/**/*.mdx",
-    '../stories/**/*.stories.mdx',
     "../components/**/*.stories.@(js|jsx|mjs|ts|tsx)",
     "../components/**/*.mdx",
   ],
