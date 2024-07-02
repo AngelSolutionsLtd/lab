@@ -32,8 +32,17 @@ const Template = (args, { argTypes }) => ({
       <SearchableDropdown 
         v-bind="$props" 
         v-model="localValue" 
-        @input="handleInput"
-      />
+        @input="handleInput">
+
+          <template v-slot:optionGroupLabel="{ option }">
+            <div v-if="option.icon" class="mr-1 required-badge d-inline-flex">
+              <i :class="option.icon"></i>
+            </div>
+            {{ option.name }}
+          </template>
+
+      </SearchableDropdown>
+
     </div>
   `,
   methods: {
@@ -136,4 +145,25 @@ WithToggleOptions.args = {
   toggleLabel: 'archived',
   togglePlaceholder: 'Include archived users',
   value: []
+};
+
+export const WithGroupIcon = Template.bind({});
+WithGroupIcon.args = {
+  options: [
+    { id: 1, name: 'Required Standards', optionGroup: true, icon: 'entypo--shield entypo--shield--pink' },
+    { id: 2, name: 'Standard 1', description: 'Description 1', recordId: '1' },
+    { id: 3, name: 'Standard 2', description: 'Description 2', recordId: '2' },
+    { id: 4, name: 'Optional Standards', optionGroup: true },
+    { id: 5, name: 'Standard 3', description: 'Description 3', recordId: '3', optional: true },
+    { id: 6, name: 'Standard 4', description: 'Description 4', recordId: '4', optional: true },
+  ],
+  searchPlaceholder: "Search for a template",
+  placeholder:"Choose template`",
+	togglePlaceholder:"Include optional templates",
+	hasToggledData:false,
+	toggleLabel:"optional",
+	hasOptionGroup:true,
+	optionGroupLabel:"optionGroup",
+	hasIcon:"true",
+  value: { id: 2, name: 'Standard 1', description: 'Description 1', recordId: '1' },
 };

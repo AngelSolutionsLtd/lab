@@ -91,7 +91,16 @@
                   <strong>{{option.name}}</strong>
                 </checkbox>
                 <strong v-else>
-                  {{ option.name }}
+                  <template v-if="hasIcon">
+                    <slot name="optionGroupLabel" :option="option">
+                      {{ option.name }}
+                    </slot>
+                  </template>
+
+                  <template v-else>
+                    {{ option.name }}
+                  </template>
+                 
                 </strong>
                 
                 <div v-if="option[optionGroupLabel] && !hasOptionsInGroup(option.optionGroupLabel)" class="p-1">No {{option.name}} data</div>
@@ -246,7 +255,12 @@
         searchProperties: {
           type: Array,
           default: () => ['name']
-        }      
+        },
+        hasIcon: {
+        type: Boolean,
+        default: false,
+        note: 'Boolean value to show slot with icon next to group label'
+      },      
       },
       data() {
         return {
