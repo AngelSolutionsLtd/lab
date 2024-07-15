@@ -6,7 +6,7 @@ import { Meta, Preview } from '@storybook/blocks';
 
 This is a group of utility classes allowing easy application of consistent design patterns across elements without the need for custom CSS for each instance.
 
-## Spacing
+## Spacing Size
 
 The following demonstrates the various spacing values available in our design system.
 
@@ -39,6 +39,38 @@ The following demonstrates the various spacing values available in our design sy
   </tbody>
 </table>
 
+## Spacing Classes
+
+Spacing classes include margin and padding.
+
+Size values include: 1 - 6 from the above table and breakpoint values include sm, md, lg, and xl.
+
+```html
+.p-{breakpoint}-{size} // all sides
+.m-{breakpoint}-{size} // all sides
+.m-{breakpoint}-auto // auto
+
+.pt-{breakpoint}-{size} // padding top
+.mt-{breakpoint}-{size} // margin top
+.mt-{breakpoint}-auto // margin top auto
+.nmt-{breakpoint}-{size} // negative margin top
+
+.pr-{breakpoint}-{size} // padding right
+.mr-{breakpoint}-{size} // margin right
+.mr-{breakpoint}-auto // margin right auto
+.nmr-{breakpoint}-{size} // negative margin right
+
+.pb-{breakpoint}-{size} // padding bottom
+.mb-{breakpoint}-{size} // margin bottom
+.mb-{breakpoint}-auto // margin bottom auto
+.nmb-{breakpoint}-{size} // negative margin bottom
+
+.pl-{breakpoint}-{size} // padding left
+.ml-{breakpoint}-{size} // margin left
+.ml-{breakpoint}-auto // margin left auto
+.nml-{breakpoint}-{size} // negative margin left
+```
+
 ## Text Alignment
 
 Alignment classes can be used on their own or they can used with breakpoints
@@ -48,11 +80,166 @@ Alignment classes can be used on their own or they can used with breakpoints
     <div className="col-md-12">
         <p className="text-left">text-left</p>
         <p className="text-left text-lg-center">text-center</p>
-        <p className="text-right">text-left</p>
+        <p className="text-right">text-right</p>
 
         ```html
-        <p className="text-left text-lg-center">text-center</p>
+        .text-{breakpoint}-left
+        .text-{breakpoint}-center
+        .text-{breakpoint}-right
         ```
     </div>
   </div>
 </div>
+
+## Borders
+
+Each class applies a border to one side of an element, with varying thicknesses and responsive breakpoints.
+
+<ul>
+  <li>thickness - 1 - 9</li>
+  <li>breakpoint - sm, md, lg, xl</li>
+</ul>
+
+```html
+.border-{thickness}-{breakpoint}-left
+.border-{thickness}-{breakpoint}-right
+.border-{thickness}-{breakpoint}-top
+.border-{thickness}-{breakpoint}-bottom
+```
+
+no-border class removes border from one side
+
+```html
+.no-border-{breakpoint}-left
+.no-border-{breakpoint}-right
+.no-border-{breakpoint}-top
+.no-border-{breakpoint}-bottom
+```
+
+## Display
+
+Display values including breakpoint values, Where value is one of:
+
+<ul>
+  <li>none</li>
+  <li>inline</li>
+  <li>inline-block</li>
+  <li> block</li>
+  <li>table</li>
+  <li>table-cell</li>
+  <li>table-row</li>
+  <li>flex</li>
+  <li>inline-flex</li>
+</ul>
+   
+
+```html
+.d-{value} for xs
+.d-{breakpoint}-{value} for sm, md, lg, and xl.
+```
+
+
+## flex
+
+Flexbox helper classes
+
+```html
+.flex-{breakpoint}-row       
+.flex-{breakpoint}-column   
+.flex-{breakpoint}-row-reverse
+.flex-{breakpoint}-column-reverse
+```
+
+Flexbox wrap
+
+
+```html
+.flex-{breakpoint}-wrap       
+.flex-{breakpoint}-nowrap   
+.flex-{breakpoint}-wrap-reverse
+```
+
+Justify content
+
+
+```html
+.justify-content-{breakpoint}-start       
+.justify-content-{breakpoint}-end   
+.justify-content-{breakpoint}-center
+.justify-content-{breakpoint}-between
+.justify-content-{breakpoint}-around
+```
+
+Align items
+
+```html
+.align-items-{breakpoint}-start       
+.align-items-{breakpoint}-end   
+.align-items-{breakpoint}-center
+.align-items-{breakpoint}-baseline
+.align-items-{breakpoint}-stretch
+```
+
+Align content
+
+```html
+.align-content-{breakpoint}-start       
+.align-content-{breakpoint}-end   
+.align-content-{breakpoint}-center
+.align-content-{breakpoint}-between
+.align-content-{breakpoint}-around
+.align-content-{breakpoint}-stretch
+```
+
+Align self
+
+```html
+.align-self-{breakpoint}-start       
+.align-self-{breakpoint}-end   
+.align-self-{breakpoint}-center
+.align-self-{breakpoint}-baseline
+.align-self-{breakpoint}-stretch
+``` 
+
+Order
+
+```html
+.order-{breakpoint}-0       
+.order-{breakpoint}-1   
+.order-{breakpoint}-2
+.order-{breakpoint}-3
+```
+
+Flex grow
+
+```html
+.flex-1
+.flex-2
+.flex-3
+```
+
+## Sizing
+
+width or height values include
+
+
+<ul>
+  <li>25%</li>
+  <li>50%</li>
+  <li>75%</li>
+  <li>100%</li>
+  <li>auto</li>
+</ul>
+
+
+```html
+.w-{breakpoint}-{size}
+.h-{breakpoint}-{size}
+```
+
+max width values
+
+```html
+.mw-100 // max-width: 100%;
+.mh-100 // max-height: 100%
+```
