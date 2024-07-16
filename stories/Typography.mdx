@@ -1,0 +1,153 @@
+import { Meta, Typeset } from '@storybook/blocks';
+
+<Meta title="Design/Typography" />
+
+export const typography = {
+  type: {
+    primary: '"Open Sans", Helvetica, Arial, sans-serif',
+    secondary: '"Open Sans Condensed", Helvetica, Arial, sans-serif',
+  },
+  weight: {
+    regular: '400',
+    bold: '700',
+    extrabold: '800',
+  },
+  size: {
+    s1: 10,
+    s2: 12,
+    s3: 14,
+    s4: 16,
+    m1: 20,
+    m2: 24,
+    l1: 30,
+    l2: 36,
+    l3: 72,
+    l4: 96
+  },
+};
+ 
+export const SampleText = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit.';
+ 
+# Typography
+ 
+**Font:** Open Sans
+ 
+**Weights:** 400(regular), 700(bold), 800(extrabold)
+ 
+<Typeset
+  fontSizes={[
+    Number(typography.size.s1),
+    Number(typography.size.s2),
+    Number(typography.size.s3),
+    Number(typography.size.m1),
+    Number(typography.size.m2),
+    Number(typography.size.l1),
+    Number(typography.size.l2),
+    Number(typography.size.l3),
+    Number(typography.size.l4),
+  ]}
+  fontWeight={typography.weight.extrabold}
+  sampleText={SampleText}
+  fontFamily={typography.type.primary}
+/>
+
+**Font:** Open Sans Condensed
+ 
+**Weights:** 400(regular), 700(bold), 800(extrabold)
+ 
+<Typeset
+  fontSizes={[
+    Number(typography.size.s1),
+    Number(typography.size.s2),
+    Number(typography.size.s3),
+    Number(typography.size.m1),
+    Number(typography.size.m2),
+    Number(typography.size.l1),
+    Number(typography.size.l2),
+    Number(typography.size.l3),
+    Number(typography.size.l4),
+  ]}
+  fontWeight={typography.weight.extrabold}
+  sampleText={SampleText}
+  fontFamily={typography.type.secondary}
+/>
+
+## Display
+<Typeset
+  fontSizes={[Number(typography.size.l4)]}
+  fontWeight={typography.weight.bold}
+  sampleText={`.Giga`}
+  fontFamily={typography.type.primary}
+/>
+<Typeset
+  fontSizes={[Number(typography.size.l3)]}
+  fontWeight={typography.weight.bold}
+  sampleText={`.Mega`}
+  fontFamily={typography.type.primary}
+/>
+<Typeset
+  fontSizes={[Number(typography.size.l3)]}
+  fontWeight={typography.weight.bold}
+  sampleText={`.Kilo`}
+  fontFamily={typography.type.primary}
+/>
+
+## Headings
+<Typeset
+  fontSizes={[Number(typography.size.l2)]}
+  fontWeight={typography.weight.bold}
+  sampleText={`H1 / .aplha`}
+  fontFamily={typography.type.primary}
+/>
+<Typeset
+  fontSizes={[Number(typography.size.l1)]}
+  fontWeight={typography.weight.bold}
+  sampleText={`H2 / .beta`}
+  fontFamily={typography.type.primary}
+/>
+<Typeset
+  fontSizes={[Number(typography.size.m2)]}
+  fontWeight={typography.weight.bold}
+  sampleText={`H3 / .gamma`}
+  fontFamily={typography.type.primary}
+/>
+<Typeset
+  fontSizes={[Number(typography.size.m1)]}
+  fontWeight={typography.weight.bold}
+  sampleText={`H4 / .delta`}
+  fontFamily={typography.type.primary}
+/>
+<Typeset
+  fontSizes={[Number(typography.size.s4)]}
+  fontWeight={typography.weight.bold}
+  sampleText={`H5 / .epsilon`}
+  fontFamily={typography.type.primary}
+/>
+<Typeset
+  fontSizes={[Number(typography.size.s3)]}
+  fontWeight={typography.weight.bold}
+  sampleText={`H6 / .zeta`}
+  fontFamily={typography.type.primary}
+/>
+
+
+## Body
+<Typeset
+  fontSizes={[Number(typography.size.s3)]}
+  fontWeight={typography.weight.regular}
+  sampleText={`p / button / .zeta / .size--14`}
+  fontFamily={typography.type.primary}
+/>
+<Typeset
+  fontSizes={[Number(typography.size.s2)]}
+  fontWeight={typography.weight.regular}
+  sampleText={`.milli`}
+  fontFamily={typography.type.primary}
+/>
+<Typeset
+  fontSizes={[Number(typography.size.s1)]}
+  fontWeight={typography.weight.regular}
+  sampleText={`.micro`}
+  fontFamily={typography.type.primary}
+/>
+
