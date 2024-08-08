@@ -22,5 +22,19 @@ const config = {
   docs: {
     autodocs: "tag",
   },
+  webpackFinal: async (config) => {
+    // Add SCSS rule
+    config.module.rules.push({
+      test: /\.scss$/,
+      use: [
+        'vue-style-loader',  // Handles Vue-specific styles
+        'css-loader',        // Translates CSS into CommonJS
+        'sass-loader',       // Compiles Sass to CSS
+      ],
+    });
+
+    return config;
+  },
 };
+
 export default config;

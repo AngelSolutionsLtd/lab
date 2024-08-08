@@ -58,10 +58,15 @@ const defaultOptions = [
   { id: 3, name: 'Option 3' },
 ]
 
-export const Default = Template.bind({});
-Default.args = {
-  options: defaultOptions,
-  value: { id: 2, name: 'Option 2' }
+
+export const Default = {
+  tags: ['autodocs'],
+  render: Template,
+  args: {
+    options: defaultOptions,
+    appendToBody: true,
+    value: { id: 2, name: 'Option 2' }
+  }
 };
 
 export const WithOptionGroups = Template.bind({});

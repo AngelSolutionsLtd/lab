@@ -4,12 +4,7 @@
 			<p class="media__color media__icon gamma media__img" v-if="hasIcon">
 				<em v-bind:class="icon"></em>
 			</p>
-
-			<div class="media__body">
-				<p class="mb-0 size--14" :class="textColor">{{ body }}</p>
-			</div>
-			
-			<!-- <slot class="media__body"></slot> -->
+			<slot class="media__body"></slot>
 			
 			<a v-if="closable" class="media__color media__icon gamma media__img--rev ml-auto" @click.prevent="closeCallback">
 				<span class="entypo--cancel-circled"></span>
@@ -46,9 +41,6 @@
 			hasIcon: {
 				type: Boolean,
 				default: true
-			},
-			body: {
-				type: String
 			}
         },
 		computed: {
