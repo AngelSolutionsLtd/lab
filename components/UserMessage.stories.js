@@ -8,7 +8,17 @@ export default {
   render: (args, { argTypes }) => ({
     props: Object.keys(argTypes),
     components: { UserMessage },
-    template: '<UserMessage v-bind="$props" />',
+    template: `
+      <UserMessage v-bind="filteredProps">
+        ${args.slotTemplate}
+      </UserMessage>
+    `,
+    computed: {
+      filteredProps() {
+        const { slotTemplate, ...props } = this.$props;
+        return props;
+      },
+    },
   }),
   argTypes: {
     type: { 
@@ -29,72 +39,63 @@ export default {
     hasIcon: {
         control: 'boolean'
     },
-    body: {
-        control: { type: 'text' },
-    }
   },
 };
 
-// More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
-// export const positive = {
-//   args: {
-//     type: 'positive',
-//     body: 'user message',
-//     closable: true,
-//     hasIcon: true
-//   },
-// };
-
-
 const Template = (args, { argTypes }) => ({
-    components: { UserMessage },
-    props: Object.keys(argTypes),
-    computed: {
-      adjustedClosable() {
-        return this.type === 'no-data' ? false : this.closable;
-      }
+  props: Object.keys(argTypes),
+  components: { UserMessage },
+  template: `
+    <UserMessage v-bind="filteredProps">
+      ${args.slotTemplate}
+    </UserMessage>
+  `,
+  computed: {
+    filteredProps() {
+      const { slotTemplate, ...props } = this.$props;
+      return props;
     },
-    template: '<UserMessage v-bind="$props" :closable="adjustedClosable" />',
-  });
-  
-  export const PositiveMessage = Template.bind({});
-  PositiveMessage.args = {
-    type: 'positive',
-    body: 'This is a positive message!',
-    closable: true
-  };
-  
-  export const InformationMessage = Template.bind({});
-  InformationMessage.args = {
-    type: 'information',
-    body: 'This is an informational message.',
-    closable: true
-  };
-  
-  export const WarningMessage = Template.bind({});
-  WarningMessage.args = {
-    type: 'warning',
-    body: 'This is a warning message.',
-    closable: true
-  };
-  
-  export const NegativeMessage = Template.bind({});
-  NegativeMessage.args = {
-    type: 'negative',
-    body: 'This is a negative message!',
-    closable: true
-  };
-  
-  export const WhisperMessage = Template.bind({});
-  WhisperMessage.args = {
-    type: 'whisper',
-    body: 'This is a whisper message.',
-    closable: true
-  };
-  
-  export const NoDataMessage = Template.bind({});
-  NoDataMessage.args = {
-    type: 'no-data',
-    body: 'No data available.',
-    closable: false // Explicitly setting this to false
-  };
+  },
+});
+
+export const PositiveMessage = Template.bind({});
+PositiveMessage.args = {
+  type: 'positive',
+  slotTemplate: 'This is additional positive message content!',
+  closable: true
+};
+
+export const InformationMessage = Template.bind({});
+InformationMessage.args = {
+  type: 'information',
+  slotTemplate: 'This is additional informational message content.',
+  closable: true
+};
+
+export const WarningMessage = Template.bind({});
+WarningMessage.args = {
+  type: 'warning',
+  slotTemplate: 'This is additional warning message content.',
+  closable: true
+};
+
+export const NegativeMessage = Template.bind({});
+NegativeMessage.args = {
+  type: 'negative',
+  slotTemplate: 'This is additional negative message content!',
+  closable: true
+};
+
+export const WhisperMessage = Template.bind({});
+WhisperMessage.args = {
+  type: 'whisper',
+  slotTemplate: 'This is additional whisper message content.',
+  closable: true
+};
+
+export const NoDataMessage = Template.bind({});
+NoDataMessage.args = {
+  type: 'no-data',
+  slotTemplate: 'No additional data available.',
+  closable: false // Explicitly setting this to false
+};
