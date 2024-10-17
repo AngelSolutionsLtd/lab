@@ -1,6 +1,5 @@
 import MyButton from './Button.vue';
 
-// More on how to set up stories at: https://storybook.js.org/docs/writing-stories
 export default {
   title: 'Components/Button',
   component: MyButton,
@@ -18,11 +17,13 @@ export default {
     size: {
       control: { type: 'select' },
       options: ['small', 'large', 'huge', 'full'],
-    } 
+    },
+    roundedCorners: {           // Add the roundedCorners control
+      control: { type: 'boolean' }
+    }
   },
 };
 
-// More on writing stories with args: https://storybook.js.org/docs/writing-stories/args
 export const Small = {
   args: {
     size: 'small',
@@ -48,5 +49,14 @@ export const Full = {
   args: {
     size: 'full',
     label: 'Button',
+  },
+};
+
+// Example with rounded corners
+export const Rounded = {
+  args: {
+    size: 'large',
+    label: 'Rounded Button',
+    roundedCorners: true
   },
 };
