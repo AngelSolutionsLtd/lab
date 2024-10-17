@@ -4,7 +4,6 @@
 
 <script>
 // import './button.css';
-
 import '../fonts/style.css';
 
 export default {
@@ -32,6 +31,11 @@ export default {
     inverted: {
       type: Boolean,
       default: false
+    },
+    // New prop for rounded corners
+    roundedCorners: {
+      type: Boolean,
+      default: false
     }
   },
 
@@ -41,11 +45,12 @@ export default {
         'btn': true,
         [`btn--${this.size}`]: true,
         [`${this.btnColor !== 'primary' ? `btn--${this.btnColor}` : 'btn'}--inverted`]: this.inverted,
-        [`${this.default}`]: true
+        [`${this.default}`]: true,
+        'btn--rounded': this.roundedCorners  // Adds btn--rounded if roundedCorners is true
       };
     },
     default() {
-      if (this.btnColor != 'primrary' && !this.inverted) {
+      if (this.btnColor != 'primary' && !this.inverted) {
         return `btn--${this.btnColor}`
       } else {
         return ''
