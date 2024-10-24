@@ -21,15 +21,17 @@
 
 				<div v-if="isVertical" class="d-flex align-items-center">
 					<p class="mb-0 force-break">{{ link.title }}</p>
-					<slot name="options" :item="link"></slot>
+					<template v-if="withOptions">
+						<slot name="options" :item="link"></slot>
+					</template>
 				</div>
 
                 <template v-else>
-                    <span class="d-block d-lg-none d-xl-block">
+                    <span class="d-block d-lg-none d-xl-inline-block">
                         {{link.title}}
                     </span>
                     
-                    <span class="d-none d-lg-block d-xl-none">
+                    <span class="d-none d-lg-inline-block d-xl-none">
                         {{link.responsiveName}}
                     </span>
                 </template>
@@ -59,7 +61,11 @@ export default {
         setWidth: {
             type: Boolean,
             default: false
-        }
+        },
+		withOptions: {
+			type: Boolean,
+            default: false
+		}
 
 	},
 	methods: {

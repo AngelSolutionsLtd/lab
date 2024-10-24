@@ -1,4 +1,5 @@
 import NavTabs from './NavTabs.vue';
+import TippyWrapper from './TippyWrapper.vue';
 
 export default {
 	title: 'Components/NavTabs',
@@ -15,20 +16,43 @@ export default {
 			defaultValue: false,
 		},
 		setWidth: {
-			contron: 'boolean',
-			description: 'Toggles set width fo horizontal tabs only',
+			control: 'boolean',
+			description: 'Toggles set width for horizontal tabs only',
 			defaultValue: false
+		},
+		withOptions: {
+			control: 'boolean',
+			description: 'Toggles options slot',
+			default: false
 		}
 	},
 };
 
 const Template = (args) => ({
-	components: { NavTabs },
+	components: { NavTabs, TippyWrapper },
 	setup() {
 		return { args };
 	},
 	template: `
-		<NavTabs v-bind="args" />
+		<NavTabs v-bind="args">
+			<template #options="{ item }">
+				<TippyWrapper class="options-popup-tippy ml-auto">
+					<template #triggerTarget>
+						<button @click.prevent class="btn--default px-2">
+							<i class="entypo--dot-3 icon-rotate--90 color--white" />
+						</button>
+					</template>
+
+					<template #content>
+						<div class="options-tooltip has-min-width pl-0">
+							<a class="options-tooltip__link"  @click.prevent="">
+								<i class="entypo--pencil" />Edit
+							</a>
+						</div>
+					</template>
+				</TippyWrapper>
+			</template>
+		</NavTabs>
 	`,
 });
 
@@ -41,6 +65,7 @@ DefaultNavTabs.args = {
 	],
 	isVertical: false,
 	setWidth: false,
+	withOptions: false
 };
 
 export const VerticalTabs = Template.bind({});
@@ -52,6 +77,7 @@ VerticalTabs.args = {
 	],
 	isVertical: true,
 	setWidth: false,
+	withOptions: false
 };
 
 export const LongTabs = Template.bind({});
@@ -62,6 +88,7 @@ LongTabs.args = {
 	],
 	isVertical: false,
 	setWidth: true,
+	withOptions: false
 };
 
 export const NotificationTabs = Template.bind({});
@@ -72,5 +99,18 @@ NotificationTabs.args = {
 		{ title: 'CPD Needs', responsiveName: 'CPD' },
 	],
 	isVertical: false,
-	setWidth: true
+	setWidth: true,
+	withOptions: false
+};
+
+export const TabsWithOptions = Template.bind({});
+TabsWithOptions.args = {
+	navList: [
+		{ title: 'Layout A', responsiveName: 'A' },
+		{ title: 'Layout B', responsiveName: 'B' },
+		{ title: 'Layout C', responsiveName: 'C' },
+	],
+	isVertical: true,
+	setWidth: false,
+	withOptions: true
 };
