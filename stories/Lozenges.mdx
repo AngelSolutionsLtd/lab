@@ -1,0 +1,120 @@
+import { Meta } from '@storybook/blocks';
+
+<Meta title="Design/Lozenges" />
+
+# Lozenge Styles
+
+## Judgement Scale
+
+<div className="section d-block py-3">
+  <div className="row no-gutters">
+    <div className="col-md-12">
+      Judgement / KPI scale using `rag` colours
+    </div>
+  </div>
+</div>
+
+<div className="judgement__scale d-inline-flex d-lg-flex" >
+    <div className="judgement-grade-desc-popup">
+        <span className="rag--red" >R</span>
+    </div>
+    <div className="judgement-grade-desc-popup">
+        <span className="rag--amber">A</span>
+    </div>
+    <div className="judgement-grade-desc-popup">
+        <span className="rag--green">G</span>
+    </div>
+    <div className="judgement-grade-desc-popup">
+        <span className="rag--blue">B</span>
+    </div>
+    <div className="judgement-grade-desc-popup">
+        <span className="rag--grey" >NA</span>
+    </div>
+</div>
+
+<div className="section d-block py-3">
+  <div className="row no-gutters">
+    <div className="col-md-12">
+    `ofsted` grade colour scale
+    </div>
+  </div>
+</div>
+
+<div className="judgement__scale d-inline-flex d-lg-flex" >
+    <div className="judgement-grade-desc-popup">
+        <span className="ofsted--outstanding" >O</span>
+    </div>
+    <div className="judgement-grade-desc-popup">
+        <span className="ofsted--good">G</span>
+    </div>
+    <div className="judgement-grade-desc-popup">
+        <span className="ofsted--req">RI</span>
+    </div>
+     <div className="judgement-grade-desc-popup">
+        <span className="ofsted--inadequate">I</span>
+    </div>
+    <div className="judgement-grade-desc-popup">
+        <span className="ofsted--no-grade">NA</span>
+    </div>
+  
+</div>
+
+## Status Badges
+
+<div className="section d-block py-3">
+  <div className="row no-gutters">
+    <div className="col-md-12">
+      `status-badge` with rag colours
+    </div>
+  </div>
+</div>
+<div className="row no-gutters mb-3">
+    <div className="col-md-12">
+        <div className="status-badge status-badge--rag--grey mr-2" style={{ fontSize: 14 + 'px' }}>Not Scheduled </div>
+        <div className="status-badge status-badge--rag--amber mr-2" style={{ fontSize: 14 + 'px' }}>Draft</div>
+        <div className="status-badge status-badge--rag--red mr-2" style={{ fontSize: 14 + 'px' }}>Not Agreed</div>
+        <div className="status-badge status-badge--rag--green" style={{ fontSize: 14 + 'px' }}>Active</div>
+    </div>
+</div>
+<div className="section d-block py-3">
+  <div className="row no-gutters">
+    <div className="col-md-12">
+    `lozenge--draft` / `lozenge--finalised`
+    </div>
+  </div>
+</div>
+<div className="row no-gutters">
+    <div className="col-md-12">
+        <span className="lozenge lozenge--draft mr-2" style={{ fontSize: 14 + 'px' }}>Draft</span>
+        <span className="lozenge lozenge--finalised" style={{ fontSize: 14 + 'px' }}>Finalised</span>
+    </div>
+</div>
+
+## Required Badges
+
+<div className="section d-block py-3">
+  <div className="row no-gutters">
+    <div className="col-md-12">
+      Required badge useage as divider and checkbox
+    </div>
+  </div>
+</div>
+
+<div className="d-flex align-items-center rag--pink-d30 required-badge-border mb-2" style={{ fontSize: 14 + 'px' }}>
+    <div className="required-badge mr-2">
+        <i className="entypo--shield entypo--shield--pink"></i>
+    </div>
+    <strong>Required</strong>
+</div>
+
+<div className="row no-gutters">
+    <div className="col-md-12 col-lg-3">
+        <div className="d-flex align-items-center required-badge px-2 py-1 mt-3 mt-lg-0" style={{ fontSize: 14 + 'px' }}>
+            <input type="checkbox" id="standardRequiredCheckbox" name="StandardRequired" className="form-accent-color--psp mr-2"/>
+            <label htmlFor="standardRequiredCheckbox" className="d-flex align-items-center rag--pink-d30">
+                <i className="entypo--shield entypo--shield--pink mr-1"></i>
+                <strong>Required only</strong>
+            </label>
+        </div>
+    </div>
+</div>
