@@ -3,6 +3,7 @@ import SvgMapMarker from './Marker.vue';
 export default {
   title: 'Components/Map/Marker',
   component: SvgMapMarker,
+  tags: ['autodocs'],
   argTypes: {
     rollSize: {
       control: { type: 'select' },
