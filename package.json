@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "leaflet": "^1.9.4",
     "loadash": "^1.0.0",
     "prismjs": "^1.29.0",
     "storybook": "^7.6.19",
