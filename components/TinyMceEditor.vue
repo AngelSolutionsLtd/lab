@@ -3,16 +3,16 @@
     <div class="tiny-mc__editor">
       <tinymce-editor
         ref="tinymce"
-        @init="handleInit"
-        @blur="handleBlur"
-        @keyup="handleKeyUp"
-        @change="handleChange"
-        @focus="handleFocus"
         v-model="internalValue"
         :id="editorId"
         :init="init"
         :apiKey="''"
         :licenseKey="'gpl'"
+        @init="handleInit"
+        @blur="() => $emit('onBlur')"
+        @keyup="() => $emit('onKeyUp')"
+        @change="() => $emit('onChange')"
+        @focus="() => $emit('onFocus')"
       />
     </div>
   </div>
@@ -21,20 +21,18 @@
 <script>
 import 'tinymce';
 import Editor from '@tinymce/tinymce-vue';
+import '../Modules/TildaPlugin/tilda.js';
 
-// ✅ Import TinyMCE theme, icons, model
 import 'tinymce/icons/default/icons.min.js';
 import 'tinymce/themes/silver/theme.min.js';
 import 'tinymce/models/dom/model.min.js';
 
-// ✅ Import TinyMCE plugins used
 import 'tinymce/plugins/advlist';
 import 'tinymce/plugins/link';
 import 'tinymce/plugins/lists';
 import 'tinymce/plugins/table';
 import 'tinymce/plugins/fullscreen';
 
-// ✅ Import required TinyMCE CSS skins for themes to render correctly
 import 'tinymce/skins/ui/oxide/skin.min.css';
 import 'tinymce/skins/content/default/content.min.css';
 
@@ -75,23 +73,21 @@ export default {
       this.$emit('update:modelValue', newVal);
     },
   },
+  mounted() {
+    const container = this.$refs.tinymce.$el.querySelector('.tox');
+    if (container) {
+      container.addEventListener('tilda-clicked', (e) => {
+        this.$emit('tilda-clicked', e.detail.editorId);
+      });
+    } else {
+      console.warn('TinyMCE container not found for event binding');
+    }
+  },
   methods: {
     handleInit() {
       this.tinymceLoaded = true;
       this.internalValue = this.initialValue;
       this.$emit('onInit');
-    },
-    handleBlur() {
-      this.$emit('onBlur');
-    },
-    handleKeyUp() {
-      this.$emit('onKeyUp');
-    },
-    handleChange() {
-      this.$emit('onChange');
-    },
-    handleFocus() {
-      this.$emit('onFocus');
     },
   },
 };

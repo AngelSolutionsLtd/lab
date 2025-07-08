@@ -1,6 +1,7 @@
 import { h } from 'vue';
 import TippyWrapper from './TippyWrapper.vue';
 
+
 export default {
   title: 'Components/TippyWrapper',
   component: TippyWrapper,
