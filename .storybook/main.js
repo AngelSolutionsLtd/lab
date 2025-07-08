@@ -10,18 +10,15 @@ const config = {
     "@storybook/addon-links",
     "@storybook/addon-essentials",
     "@storybook/addon-interactions",
+    "@storybook/addon-mdx-gfm",
+    "@storybook/addon-webpack5-compiler-babel",
+    "@chromatic-com/storybook"
   ],
   framework: {
-    name: "@storybook/vue-webpack5",
-    options: {
-      builder: {
-        useSWC: true,
-      },
-    },
+    name: "@storybook/vue3-webpack5",
+    options: {}
   },
-  docs: {
-    autodocs: "tag",
-  },
+  docs: {},
   webpackFinal: async (config) => {
     // Add SCSS rule
     config.module.rules.push({

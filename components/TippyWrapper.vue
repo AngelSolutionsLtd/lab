@@ -1,76 +1,52 @@
 <template>
-    <tippy
-		arrow
-		ref="tippy"
-		class="d-inline-block"
-		:trigger="tippyOptions?.trigger || 'click'"
-		:maxWidth="tippyOptions?.maxWidth || '1000px'"
-		:placement="tippyOptions?.placement || 'bottom'"
-		:theme="tippyOptions?.theme || 'psp responsive'"
-		:interactive="tippyOptions?.interactive || true"
-		:zIndex="tippyOptions?.zIndex || '9999'"
-		:popperOptions="popperOptions"
-		@hide="$emit('hide')"
-		@hidden="$emit('hidden')"
-	>
+  <Tippy
+    ref="tippy"
+    class="d-inline-block"
+    :trigger="tippyOptions.trigger || 'click'"
+    :maxWidth="tippyOptions.maxWidth || '1000px'"
+    :placement="tippyOptions.placement || 'bottom'"
+    theme="light"
+    :interactive="tippyOptions.interactive ?? true"
+    :zIndex="tippyOptions.zIndex || '9999'"
+    :appendTo="appendTo"
+    :popperOptions="popperOptions"
+    @hide="$emit('hide')"
+    @hidden="$emit('hidden')"
+  >
+    <template #content>
+      <slot name="content"></slot>
+    </template>
 
-		<template #trigger>
-			<slot name="triggerTarget"></slot>
-		</template>
-
-		<slot name="content"></slot>
-	</tippy>
-
-
-   <!-- <tippy interactive
-        :animate-fill="false"
-        placement="bottom-end"
-        distant="7"
-        animation="fade"
-        theme="light options-popup-tippy"
-        trigger="mouseenter"
-        maxWidth="400px"
-        class="d-inline-block"
-        arrow>
-        <template v-slot:trigger>
-           <i class="entypo--info-circled d-inline-block cursor--pointer brand--secondary"/>
-        </template>
-
-        <div class="options-tooltip has-min-width p-0">
-            <a class="options-tooltip__link"  @click.prevent="">
-              <span class="entypo--pencil" />
-              Edit
-            </a>
-        </div>
-    </tippy> -->
+    <slot name="triggerTarget"></slot>
+  </Tippy>
 </template>
 
-<script>
-import { TippyComponent } from 'vue-tippy';
-import "tippy.js/dist/tippy.css";
-import "tippy.js/themes/light.css";
-import "tippy.js/themes/light-border.css";
+<script setup>
+import { ref } from 'vue';
+import { Tippy } from 'vue-tippy';
+import 'tippy.js/dist/tippy.css';
+import 'tippy.js/themes/light.css';
+import 'tippy.js/themes/light-border.css';
 
-export default {
-  components: {
-    tippy: TippyComponent,
-    data() {
-		return {
-			// popperOptions: {
-			// 	modifiers: {
-			// 		preventOverflow: {
-			// 			enabled: true,
-			// 		}
-			// 	},
-			// }
-		}
-	},
-	props: {
-		tippyOptions: {
-			type: Object,
-			default: () => ({})
-		}   
-	}   
-  }
+const props = defineProps({
+  tippyOptions: {
+    type: Object,
+    default: () => ({}),
+  },
+});
+
+defineEmits(['hide', 'hidden']);
+
+const tippy = ref(null);
+const appendTo = () => (typeof document !== 'undefined' ? document.body : null);
+const popperOptions = {
+  modifiers: [
+    {
+      name: 'preventOverflow',
+      options: {
+        boundary: 'viewport',
+      },
+    },
+  ],
 };
 </script>
