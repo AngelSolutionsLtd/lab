@@ -1,4 +1,5 @@
 import TinyMceEditor from './TinyMceEditor.vue';
+import '../Modules/TildaPlugin/tilda.js'
 
 export default {
   title: 'Components/TinyMceEditor',
@@ -21,16 +22,17 @@ export const Default = Template.bind({});
 Default.args = {
   initialValue: '<p>Hello TinyMCE</p>',
   editorId: 'storybook-tinymce',
-  init: {
+    init: {
     height: 300,
     menubar: false,
-    plugins: ['advlist', 'lists', 'link', 'table', 'fullscreen'],
+    plugins: ['advlist', 'lists', 'link', 'table', 'fullscreen', 'tilda'],
+    toolbar: [
+        'undo redo | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link table fullscreen',
+        'tilda'
+    ].join('\n'),
     skin_url: 'https://cdn.jsdelivr.net/npm/tinymce@6.8.3/skins/ui/oxide',
     content_css: 'https://cdn.jsdelivr.net/npm/tinymce@6.8.3/skins/content/default/content.min.css',
-    toolbar:
-      'undo redo | formatselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link table | fullscreen',
-      
-  },
+    },
   settings: {
     branding: true,
   },

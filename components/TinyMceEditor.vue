@@ -20,7 +20,9 @@
 
 <script>
 import 'tinymce';
+import { nextTick } from 'vue';
 import Editor from '@tinymce/tinymce-vue';
+import '../Modules/TildaPlugin/tilda.js'
 
 // ✅ Import TinyMCE theme, icons, model
 import 'tinymce/icons/default/icons.min.js';
