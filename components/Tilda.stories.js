@@ -95,3 +95,29 @@ TildaWithBanner.args = {
     <p>Now you can start editing below the banner...</p>
   `,
 };
+
+
+export const TildaWithPlaceholder = Template.bind({});
+TildaWithPlaceholder.args = {
+  init: {
+    ...Default.args.init,
+    plugins: [...Default.args.init.plugins, 'placeholder'],
+    placeholder: 'Start typing here or use Tilda to generate a draft for you using your BSQs.',
+    setup: (editor) => {
+      editor.on('init', () => {
+        const style = `
+          .mce-content-body::before {
+            color: #a084f9 !important;
+            font-style: italic;
+          }
+        `;
+        const doc = editor.getDoc?.();
+        if (doc) {
+          const styleTag = doc.createElement('style');
+          styleTag.innerHTML = style;
+          doc.head.appendChild(styleTag);
+        }
+      });
+    }
+  },
+};
