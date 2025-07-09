@@ -62,3 +62,36 @@ Default.args = {
     branding: true,
   },
 };
+
+export const TildaWithBanner = Template.bind({});
+TildaWithBanner.args = {
+  ...Default.args,
+  initialValue: `
+    <div class="tilda-banner" contenteditable="false" style="
+      border: 1px solid #993DB8;
+      background: linear-gradient(94deg, #FCFAFF 14.56%, #F9F5FE 104.6%);
+      padding: 1.2rem;
+      border-radius: 6px;
+      position: relative;
+      font-family: sans-serif;
+      margin-bottom: 1rem;
+    ">
+      <strong style="font-size: 1rem;">
+        ⚡ Jump start your SEF with <span style="color: #9b00d1;">Tilda</span>
+      </strong>
+      <p style="margin-top: 0.5rem;">
+        Complete your BSQs, then let Tilda generate a custom draft. You’re in control, tweak, polish, and make it yours.
+      </p>
+      <button style="
+        position: absolute;
+        top: 0.5rem;
+        right: 0.5rem;
+        border: none;
+        background: none;
+        font-size: 1.2rem;
+        cursor: pointer;
+      " onclick="this.parentElement.remove()">×</button>
+    </div>
+    <p>Now you can start editing below the banner...</p>
+  `,
+};
