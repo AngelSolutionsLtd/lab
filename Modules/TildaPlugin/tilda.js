@@ -116,12 +116,13 @@ tinymce.PluginManager.add('tilda', function (editor) {
     toolbar.appendChild(infoIcon);
 
     tippy(infoIcon, {
-      content: '<p class="mb-1"><strong>What is Tilda?</strong> Your smart SEF-writing assistant.</p><ul class="mb-1"><li><strong>Work with your existing text:</strong> tighten, reorganise, and correct your draft.</li><li><strong>Auto-draft from BSQs:</strong> Turn completed Bite-Sized Questions into an Ofsted-aligned first draft.</li><li><strong>Guided prompts:</strong> Get instant suggestions for structure, tone, and key criteria.</li></ul><p class="mb-1">Every suggestion follows a proven format and tone, fully aligned to the Ofsted Inspection Framework.</p>',
-      theme: 'light',
-      placement: 'bottom',
-      trigger: 'mouseenter focus',
-      allowHTML: true
-    });
+		content:
+			'<p class="mb-1"><strong>What is Tilda?</strong> Your smart SEF-writing assistant.</p><ul class="mb-1"><li><strong>Work with your existing text:</strong> tighten, reorganise, and correct your draft.</li><li><strong>Auto-draft from BSQs:</strong> Turn completed Bite-Sized Questions into an Ofsted-aligned first draft.</li><li><strong>Guided prompts:</strong> Get instant suggestions for structure, tone, and key criteria.</li></ul><p class="mb-1">Every suggestion follows a proven format and tone, fully aligned to the Ofsted Inspection Framework.</p>',
+		theme: "light",
+		placement: "bottom",
+		trigger: "click focus",
+		allowHTML: true,
+	});
 
     checkBannerAndToggleButton();
 
