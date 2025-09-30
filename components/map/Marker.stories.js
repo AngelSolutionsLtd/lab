@@ -21,16 +21,19 @@ export default {
   }
 };
 
-const Template = (args, { argTypes }) => ({
-  props: Object.keys(argTypes),
-  components: { SvgMapMarker },
-  template: '<SvgMapMarker v-bind="$props" />'
-});
-
-export const Default = Template.bind({});
-Default.args = {
-  rollSize: 'md',
-  balance: 'neutral',
-  phase: 'A',
-  hexColor: '#698BAB'
+// ✅ Use render instead of Template
+export const Default = {
+  args: {
+    rollSize: 'md',
+    balance: 'neutral',
+    phase: 'A',
+    hexColor: '#698BAB'
+  },
+  render: (args) => ({
+    components: { SvgMapMarker },
+    setup() {
+      return { args };
+    },
+    template: '<SvgMapMarker v-bind="args" />'
+  })
 };
