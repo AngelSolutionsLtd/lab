@@ -6,18 +6,18 @@ const sizeMap = {
   lg: { width: 52, height: 60 }
 };
 
-export function getMapIcon({ rollSize, balance, phase, hexColor }) {
-  const cacheKey = `${rollSize}-${balance}-${phase}-${hexColor}`;
+export function getMapIcon({ rollSize, balance, phase, hexColor, specialSchool }) {
+  const cacheKey = `${rollSize}-${balance}-${phase}-${hexColor}-${specialSchool}`;
 
   if (iconCache.has(cacheKey)) {
     return iconCache.get(cacheKey);
   }
 
-  const { width, height } = sizeMap[rollSize] || sizeMap.sm; 
+  const { width, height } = sizeMap[rollSize] || sizeMap.sm;
 
   const icon = L.divIcon({
     className: 'custom-marker',
-    html: createSvgMarker({ rollSize, balance, phase, hexColor }),
+    html: createSvgMarker({ rollSize, balance, phase, hexColor, specialSchool }),
     iconSize: [width, height],
     iconAnchor: [width / 2, height],
     popupAnchor: [0, -height]
