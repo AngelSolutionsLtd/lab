@@ -115,8 +115,15 @@ export default {
       `;
     },
     createMarkerIcon(markerProps) {
-      const { rollSize = 'sm', balance = 'neutral', phase = 'A', hexColor = '#698BAB' } = markerProps;
-      const cacheKey = `${rollSize}-${balance}-${phase}-${hexColor}`;
+      const { 
+        rollSize = 'sm', 
+        balance = 'neutral', 
+        phase = 'A', 
+        hexColor = '#698BAB', 
+        specialSchool = false 
+      } = markerProps;
+
+      const cacheKey = `${rollSize}-${balance}-${phase}-${hexColor}-${specialSchool}`;
 
       if (iconCache.has(cacheKey)) {
         return iconCache.get(cacheKey);
@@ -127,7 +134,7 @@ export default {
 
       const app = createApp({
         render() {
-          return h(SvgMapMarker, { rollSize, balance, phase, hexColor });
+          return h(SvgMapMarker, { rollSize, balance, phase, hexColor, specialSchool });
         }
       });
 
