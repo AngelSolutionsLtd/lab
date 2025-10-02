@@ -2551,7 +2551,282 @@ Default.args = {
             hexColor: "#F6D8E1",
             popup: "New Halewood College",
             id: "0e690b9f-7d3a-4524-b35c-bf0996eed6fb"
-          }
-        
-	],
+          },
+          {
+            lat: 53.355012,
+            lng: -2.83245,
+            rollSize: "md",
+            balance: "unavailable",
+            phase: "O",
+            specialSchool: true,
+            hexColor: "#61B752",
+            popup: "Riverside Academy",
+            id: "2f61e8d1-1c7e-4ed3-9d02-f5a835b7412f"
+          },
+          {
+            lat: 53.353890,
+            lng: -2.83075,
+            rollSize: "sm",
+            balance: "unavailable",
+            phase: "16",
+            specialSchool: true,
+            hexColor: "#F6BF58",
+            popup: "Brookfield Sixth Form",
+            id: "7d69e5a3-0ab1-4e97-9010-f1c56b0c0a3c"
+          },
+          {
+            lat: 53.354725,
+            lng: -2.83310,
+            rollSize: "lg",
+            balance: "unavailable",
+            phase: "O",
+            specialSchool: true,
+            hexColor: "#8B94B1",
+            popup: "Hilltop Special School",
+            id: "53e44c8d-4b1f-45c2-bc38-0ddf9a7c3a7d"
+          },
+          {
+            lat: 53.355420,
+            lng: -2.83115,
+            rollSize: "md",
+            balance: "unavailable",
+            phase: "16",
+            specialSchool: true,
+            hexColor: "#B46350",
+            popup: "Elmwood College",
+            id: "84f1e693-4827-474f-8f15-f42fa750cdab"
+          },
+          {
+            lat: 53.353650,
+            lng: -2.83225,
+            rollSize: "sm",
+            balance: "unavailable",
+            phase: "O",
+            specialSchool: true,
+            hexColor: "#F17587",
+            popup: "Oakdale Learning Centre",
+            id: "22bb7cf5-b55b-4c3b-95f0-594474d40946"
+          },
+  {
+    lat: 53.4178,
+    lng: -3.0852,
+    rollSize: "md",
+    balance: "unavailable",
+    phase: "O",
+    specialSchool: true,
+    hexColor: "#61B752",
+    popup: "Seaview Academy",
+    id: "1"
+  },
+  {
+    lat: 53.4125,
+    lng: -3.1011,
+    rollSize: "lg",
+    balance: "unavailable",
+    phase: "16",
+    specialSchool: true,
+    hexColor: "#F6BF58",
+    popup: "Greenbank College",
+    id: "2"
+  },
+  {
+    lat: 53.4089,
+    lng: -3.0884,
+    rollSize: "sm",
+    balance: "unavailable",
+    phase: "O",
+    specialSchool: true,
+    hexColor: "#8B94B1",
+    popup: "Brookside Learning Centre",
+    id: "3"
+  },
+  {
+    lat: 53.4152,
+    lng: -3.0943,
+    rollSize: "md",
+    balance: "unavailable",
+    phase: "16",
+    specialSchool: true,
+    hexColor: "#B46350",
+    popup: "Westfield Sixth Form",
+    id: "4"
+  },
+  {
+    lat: 53.4096,
+    lng: -3.0825,
+    rollSize: "lg",
+    balance: "unavailable",
+    phase: "O",
+    specialSchool: true,
+    hexColor: "#F17587",
+    popup: "Riverside School",
+    id: "5"
+  },
+  {
+    lat: 53.4190,
+    lng: -3.0981,
+    rollSize: "sm",
+    balance: "unavailable",
+    phase: "16",
+    specialSchool: true,
+    hexColor: "#61B752",
+    popup: "Northgate College",
+    id: "6"
+  },
+  {
+    lat: 53.4138,
+    lng: -3.0846,
+    rollSize: "md",
+    balance: "unavailable",
+    phase: "O",
+    specialSchool: true,
+    hexColor: "#F6BF58",
+    popup: "Oakwood Academy",
+    id: "7"
+  },
+  {
+    lat: 53.4165,
+    lng: -3.1052,
+    rollSize: "lg",
+    balance: "unavailable",
+    phase: "16",
+    specialSchool: true,
+    hexColor: "#8B94B1",
+    popup: "Lakeside Sixth Form",
+    id: "8"
+  },
+  {
+    lat: 53.4074,
+    lng: -3.0977,
+    rollSize: "sm",
+    balance: "unavailable",
+    phase: "O",
+    specialSchool: true,
+    hexColor: "#B46350",
+    popup: "Hillcrest School",
+    id: "9"
+  },
+  {
+    lat: 53.4147,
+    lng: -3.0899,
+    rollSize: "md",
+    balance: "unavailable",
+    phase: "16",
+    specialSchool: true,
+    hexColor: "#F17587",
+    popup: "Elmhurst College",
+    id: "10"
+  },
+  {
+    lat: 53.4205,
+    lng: -3.0932,
+    rollSize: "lg",
+    balance: "unavailable",
+    phase: "O",
+    specialSchool: true,
+    hexColor: "#61B752",
+    popup: "Parkside Academy",
+    id: "11"
+  },
+  {
+    lat: 53.4091,
+    lng: -3.1057,
+    rollSize: "sm",
+    balance: "unavailable",
+    phase: "16",
+    specialSchool: true,
+    hexColor: "#F6BF58",
+    popup: "Maplewood Sixth Form",
+    id: "12"
+  },
+  {
+    lat: 53.4170,
+    lng: -3.0803,
+    rollSize: "md",
+    balance: "unavailable",
+    phase: "O",
+    specialSchool: true,
+    hexColor: "#8B94B1",
+    popup: "Bayview School",
+    id: "13"
+  },
+  {
+    lat: 53.4118,
+    lng: -3.0871,
+    rollSize: "lg",
+    balance: "unavailable",
+    phase: "16",
+    specialSchool: true,
+    hexColor: "#B46350",
+    popup: "Silverwood College",
+    id: "14"
+  },
+  {
+    lat: 53.4183,
+    lng: -3.1008,
+    rollSize: "sm",
+    balance: "unavailable",
+    phase: "O",
+    specialSchool: true,
+    hexColor: "#F17587",
+    popup: "Cliffside Academy",
+    id: "15"
+  },
+  {
+    lat: 53.4065,
+    lng: -3.0916,
+    rollSize: "md",
+    balance: "unavailable",
+    phase: "16",
+    specialSchool: true,
+    hexColor: "#61B752",
+    popup: "Meadowvale College",
+    id: "16"
+  },
+  {
+    lat: 53.4159,
+    lng: -3.0855,
+    rollSize: "lg",
+    balance: "unavailable",
+    phase: "O",
+    specialSchool: true,
+    hexColor: "#F6BF58",
+    popup: "Stonebridge Academy",
+    id: "17"
+  },
+  {
+    lat: 53.4129,
+    lng: -3.0962,
+    rollSize: "sm",
+    balance: "unavailable",
+    phase: "16",
+    specialSchool: true,
+    hexColor: "#8B94B1",
+    popup: "Redwood Sixth Form",
+    id: "18"
+  },
+  {
+    lat: 53.4196,
+    lng: -3.0888,
+    rollSize: "md",
+    balance: "unavailable",
+    phase: "O",
+    specialSchool: true,
+    hexColor: "#B46350",
+    popup: "Kingswood Academy",
+    id: "19"
+  },
+  {
+    lat: 53.4104,
+    lng: -3.0833,
+    rollSize: "lg",
+    balance: "unavailable",
+    phase: "16",
+    specialSchool: true,
+    hexColor: "#F17587",
+    popup: "Fairfield College",
+    id: "20"
+  }
+
+      ],
 };

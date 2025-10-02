@@ -11,12 +11,13 @@ export default {
     },
     balance: {
       control: { type: 'select' },
-      options: ['positive', 'neutral', 'negative']
+      options: ['positive', 'neutral', 'negative', 'unavailable']
     },
     phase: {
       control: { type: 'select' },
-      options: ['A', 'P', 'S', 'N', 'SP']
+      options: ['A', 'P', 'S', 'N', 'O', "16"]
     },
+    specialSchool: { control: 'boolean' },
     hexColor: { control: 'color' }
   }
 };
