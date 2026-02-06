@@ -5,7 +5,10 @@ const config = {
     "../stories/**/*.mdx",
     "../components/**/*.stories.@(js|jsx|mjs|ts|tsx)",
     "../components/**/*.mdx",
+    "../pages/**/*.stories.@(js|jsx|mjs|ts|tsx)",
+    "../pages/**/*.mdx",
   ],
+  staticDirs: ['../public'],
   addons: [
     "@storybook/addon-links",
     "@storybook/addon-essentials",
@@ -20,16 +23,10 @@ const config = {
   },
   docs: {},
   webpackFinal: async (config) => {
-    // Add SCSS rule
     config.module.rules.push({
       test: /\.scss$/,
-      use: [
-        'vue-style-loader',  // Handles Vue-specific styles
-        'css-loader',        // Translates CSS into CommonJS
-        'sass-loader',       // Compiles Sass to CSS
-      ],
+      use: ["vue-style-loader","css-loader","sass-loader"],
     });
-
     return config;
   },
 };

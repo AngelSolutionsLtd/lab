@@ -22,7 +22,6 @@ export default {
   }
 };
 
-// ✅ Use render instead of Template
 export const Default = {
   args: {
     rollSize: 'md',
