@@ -70,7 +70,7 @@ async function loadBoundaryGeoJSON(type, name) {
   }
   
   try {
-    const url = `/geo/postcodes/${type}/${name}.geojson`
+    const url = `./geo/postcodes/${type}/${name}.geojson`
     console.log(`Loading boundary from: ${url}`)
     const response = await fetch(url)
     
@@ -482,7 +482,7 @@ async function generateUnitsFromGeoJSON() {
   console.log('Loading L1 GeoJSON to generate unit positions...')
   
   try {
-    const response = await fetch('/geo/postcodes/units/L1.geojson')
+    const response = await fetch('./geo/postcodes/units/L1.geojson')
     if (!response.ok) {
       console.warn('Could not load L1 GeoJSON, falling back to spiral pattern')
       return null
