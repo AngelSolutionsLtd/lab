@@ -69,7 +69,7 @@ const props = defineProps({
   /** Override the LSOA GeoJSON URL — useful when deploying to a CDN */
   geojsonUrl: {
     type: String,
-    default: '/geo/LSOA.geojson'
+    default: './geo/LSOA.geojson'
   }
 })
 
