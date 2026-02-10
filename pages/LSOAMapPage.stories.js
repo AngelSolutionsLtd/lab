@@ -111,27 +111,24 @@ export const Default = {
 
               <!-- 10.1%+ — pin #B36351 -->
               <div style="display:flex; flex-direction:column; align-items:center; gap:6px; flex:1;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="23" height="35" viewBox="0 0 23 35" fill="none" overflow="visible">
-                  <path d="M11.5 0C17.8513 0 23 5.14873 23 11.5C23 12.7331 22.8051 13.9206 22.4458 15.0342L22.5 15L22.395 15.1899C21.9581 16.4804 21.2977 17.6674 20.4609 18.7065L11.5 35L2.53857 18.7065C1.70188 17.6674 1.04136 16.4803 0.604492 15.1899L0.5 15L0.553711 15.0342C0.194462 13.9207 0 12.7331 0 11.5C0 5.14873 5.14873 0 11.5 0Z" stroke="black" stroke-width="1" fill="#B36351"/>
-                  <circle cx="11.25" cy="11.25" r="8.75" fill="white" stroke="black" stroke-width="1"/>
+                <svg width="23" height="35" viewBox="0 0 23 35" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M11.5 0C17.8513 0 23 5.14873 23 11.5C23 12.7331 22.8051 13.9206 22.4458 15.0342L22.5 15L22.395 15.1899C21.9581 16.4804 21.2977 17.6674 20.4609 18.7065L11.5 35L2.53857 18.7065C1.70188 17.6674 1.04136 16.4803 0.604492 15.1899L0.5 15L0.553711 15.0342C0.194462 13.9207 0 12.7331 0 11.5C0 5.14873 5.14873 0 11.5 0ZM11.25 2.5C6.41751 2.5 2.5 6.41751 2.5 11.25C2.5 16.0825 6.41751 20 11.25 20C16.0825 20 20 16.0825 20 11.25C20 6.41751 16.0825 2.5 11.25 2.5Z"  fill="#B36351"/>
                 </svg>
                 <span style="font-size:13px; font-weight:700; color:#111;">10.1%</span>
               </div>
 
               <!-- 5.1–10% — pin #FED74E -->
               <div style="display:flex; flex-direction:column; align-items:center; gap:6px; flex:1;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="23" height="35" viewBox="0 0 23 35" fill="none" overflow="visible">
-                  <path d="M11.5 0C17.8513 0 23 5.14873 23 11.5C23 12.7331 22.8051 13.9206 22.4458 15.0342L22.5 15L22.395 15.1899C21.9581 16.4804 21.2977 17.6674 20.4609 18.7065L11.5 35L2.53857 18.7065C1.70188 17.6674 1.04136 16.4803 0.604492 15.1899L0.5 15L0.553711 15.0342C0.194462 13.9207 0 12.7331 0 11.5C0 5.14873 5.14873 0 11.5 0Z" stroke="black" stroke-width="1" fill="#FED74E"/>
-                  <circle cx="11.25" cy="11.25" r="8.75" fill="white" stroke="black" stroke-width="1"/>
+                <svg width="23" height="35" viewBox="0 0 23 35" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M11.5 0C17.8513 0 23 5.14873 23 11.5C23 12.7331 22.8051 13.9206 22.4458 15.0342L22.5 15L22.395 15.1899C21.9581 16.4804 21.2977 17.6674 20.4609 18.7065L11.5 35L2.53857 18.7065C1.70188 17.6674 1.04136 16.4803 0.604492 15.1899L0.5 15L0.553711 15.0342C0.194462 13.9207 0 12.7331 0 11.5C0 5.14873 5.14873 0 11.5 0ZM11.25 2.5C6.41751 2.5 2.5 6.41751 2.5 11.25C2.5 16.0825 6.41751 20 11.25 20C16.0825 20 20 16.0825 20 11.25C20 6.41751 16.0825 2.5 11.25 2.5Z"  fill="#FED74E"/>
                 </svg>
                 <span style="font-size:13px; font-weight:700; color:#111;">5.1 - 10%</span>
               </div>
 
               <!-- 0–5% — pin #559A47 -->
               <div style="display:flex; flex-direction:column; align-items:center; gap:6px; flex:1;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="23" height="35" viewBox="0 0 23 35" fill="none" overflow="visible">
-                  <path d="M11.5 0C17.8513 0 23 5.14873 23 11.5C23 12.7331 22.8051 13.9206 22.4458 15.0342L22.5 15L22.395 15.1899C21.9581 16.4804 21.2977 17.6674 20.4609 18.7065L11.5 35L2.53857 18.7065C1.70188 17.6674 1.04136 16.4803 0.604492 15.1899L0.5 15L0.553711 15.0342C0.194462 13.9207 0 12.7331 0 11.5C0 5.14873 5.14873 0 11.5 0Z" stroke="black" stroke-width="1" fill="#559A47"/>
-                  <circle cx="11.25" cy="11.25" r="8.75" fill="white" stroke="black" stroke-width="1"/>
+                <svg width="23" height="35" viewBox="0 0 23 35" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M11.5 0C17.8513 0 23 5.14873 23 11.5C23 12.7331 22.8051 13.9206 22.4458 15.0342L22.5 15L22.395 15.1899C21.9581 16.4804 21.2977 17.6674 20.4609 18.7065L11.5 35L2.53857 18.7065C1.70188 17.6674 1.04136 16.4803 0.604492 15.1899L0.5 15L0.553711 15.0342C0.194462 13.9207 0 12.7331 0 11.5C0 5.14873 5.14873 0 11.5 0ZM11.25 2.5C6.41751 2.5 2.5 6.41751 2.5 11.25C2.5 16.0825 6.41751 20 11.25 20C16.0825 20 20 16.0825 20 11.25C20 6.41751 16.0825 2.5 11.25 2.5Z"  fill="#559A47"/>
                 </svg>
                 <span style="font-size:13px; font-weight:700; color:#111;">0 - 5%</span>
               </div>
