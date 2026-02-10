@@ -1,5 +1,5 @@
 <template>
-  <div class="map-wrapper">
+  <div class="map-wrapper" :style="{ height: mapHeight, minHeight: mapMinHeight }">
     <div ref="mapContainer" class="map-container"></div>
 
     <Transition name="loader-fade">
@@ -70,8 +70,25 @@ const props = defineProps({
   geojsonUrl: {
     type: String,
     default: './geo/LSOA.geojson'
+  },
+  /** Override the map wrapper height (any CSS value) */
+  mapHeight: {
+    type: String,
+    default: '750px'
+  },
+  /** Override the map wrapper min-height (any CSS value) */
+  mapMinHeight: {
+    type: String,
+    default: '750px'
+  },
+  /** Show the built-in click info panel. Set false to handle selection externally via the select event. */
+  showPanel: {
+    type: Boolean,
+    default: true
   }
 })
+
+const emit = defineEmits(['select', 'deselect'])
 
 const mapContainer = ref(null)
 const map = ref(null)
@@ -213,13 +230,18 @@ function setupLayers(geojson) {
   // Click to select
   map.value.on('click', FILL_LAYER, (e) => {
     if (!e.features?.length) return
-    selectedFeature.value = e.features[0].properties
+    const feature = e.features[0].properties
+    if (props.showPanel) selectedFeature.value = feature
+    emit('select', feature)
   })
 
   // Click on blank map to deselect
   map.value.on('click', (e) => {
     const features = map.value.queryRenderedFeatures(e.point, { layers: [FILL_LAYER] })
-    if (!features.length) selectedFeature.value = null
+    if (!features.length) {
+      selectedFeature.value = null
+      emit('deselect')
+    }
   })
 }
 
