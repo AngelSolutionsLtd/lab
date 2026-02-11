@@ -24,6 +24,14 @@
       </div>
     </div>
 
+    <!-- Layer toggle -->
+    <label class="lsoa-layer-toggle" :title="lsoaVisible ? 'Hide LSOA layer' : 'Show LSOA layer'">
+      <span class="lsoa-layer-toggle__label">LSOA layer</span>
+      <span class="lsoa-layer-toggle__track" :class="{ 'lsoa-layer-toggle__track--on': lsoaVisible }" @click="toggleLSOALayer">
+        <span class="lsoa-layer-toggle__thumb"></span>
+      </span>
+    </label>
+
     <!-- Hover tooltip -->
     <div
       v-if="hoveredFeature"
@@ -99,8 +107,24 @@ const loadProgress = ref(0)
 const selectedFeature = ref(null)
 const hoveredFeature = ref(null)
 const tooltipPos = ref({ x: 0, y: 0 })
+const lsoaVisible = ref(true)
 
 let hoveredId = null
+
+function toggleLSOALayer() {
+  if (!map.value) return
+  lsoaVisible.value = !lsoaVisible.value
+  const visibility = lsoaVisible.value ? 'visible' : 'none'
+  map.value.setLayoutProperty(FILL_LAYER, 'visibility', visibility)
+  map.value.setLayoutProperty(LINE_LAYER, 'visibility', visibility)
+  if (!lsoaVisible.value) {
+    hoveredFeature.value = null
+    if (hoveredId !== null) {
+      map.value.setFeatureState({ source: SOURCE_ID, id: hoveredId }, { hover: false })
+      hoveredId = null
+    }
+  }
+}
 
 const styleUrl = 'https://tiles.openfreemap.org/styles/bright'
 const SOURCE_ID = 'lsoa-source'
@@ -417,6 +441,61 @@ onBeforeUnmount(() => {
 .lsoa-info-panel__coords {
   font-size: 12px;
   color: #666;
+}
+
+.lsoa-layer-toggle {
+  position: absolute;
+  top: 54px;
+  left: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 7px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #444;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  user-select: none;
+  cursor: default;
+}
+
+.lsoa-layer-toggle__label {
+  white-space: nowrap;
+}
+
+.lsoa-layer-toggle__track {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  border-radius: 99px;
+  background: #ccc;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+
+.lsoa-layer-toggle__track--on {
+  background: #4a90d9;
+}
+
+.lsoa-layer-toggle__thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s;
+}
+
+.lsoa-layer-toggle__track--on .lsoa-layer-toggle__thumb {
+  transform: translateX(16px);
 }
 
 .lsoa-tooltip {
