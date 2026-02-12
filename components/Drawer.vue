@@ -2,7 +2,8 @@
 	<transition :name="`${direction}-drawer`">
 		<div
 			class="side-drawer"
-			:class="[isOpen ? `side-drawer--${direction}-open` : '', `side-drawer--${direction}`, {'has-side-btn': hasSideBtn, 'body-scroll-enabled': !scrollLocked}, wrapperPadding]"
+			:class="[isOpen ? `side-drawer--${direction}-open` : '', `side-drawer--${direction}`, {'has-side-btn': hasSideBtn, 'body-scroll-enabled': !scrollLocked, 'side-drawer--no-overlay': noOverlay}, wrapperPadding]"
+			:style="alignTop ? 'top: 0 !important; height: 100vh !important;' : ''"
 			ref="drawer-parent"
 			v-if="isOpen || hasSideBtn"
 		>
@@ -59,6 +60,14 @@ export default {
 		wrapperPadding: {
 			type: String,
 			default: "py-5"
+		},
+		alignTop: {
+			type: Boolean,
+			default: false
+		},
+		noOverlay: {
+			type: Boolean,
+			default: false
 		}
 	},
 	data() {
@@ -138,3 +147,11 @@ export default {
 	},
 };
 </script>
+
+<style>
+.side-drawer--no-overlay::before,
+.side-drawer--no-overlay::after {
+	display: none !important;
+	content: none !important;
+}
+</style>
