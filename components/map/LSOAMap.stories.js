@@ -33,10 +33,10 @@ export const Default = {
 
 export const EnglandAndWales = {
   args: {
-    center: [-1.5, 52.5],
-    zoom: 6,
-    fillColor: '#4a90d9',
-    lineColor: '#2c6fad',
+    center: [-1.4, 50.92],
+    zoom: 11.5,
+    fillColor: "#0000",
+    lineColor: "#0000",
     fillOpacity: 0.2
   }
 }
