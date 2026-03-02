@@ -8,14 +8,13 @@ const config = {
     "../pages/**/*.stories.@(js|jsx|mjs|ts|tsx)",
     "../pages/**/*.mdx",
   ],
-  staticDirs: ['../public'],
+  staticDirs: ['../public', { from: '../fonts', to: '/fonts' }],
   addons: [
     "@storybook/addon-links",
     "@storybook/addon-essentials",
     "@storybook/addon-interactions",
     "@storybook/addon-mdx-gfm",
-    "@storybook/addon-webpack5-compiler-babel",
-    "@chromatic-com/storybook"
+    "@storybook/addon-webpack5-compiler-babel"
   ],
   framework: {
     name: "@storybook/vue3-webpack5",
@@ -25,8 +24,21 @@ const config = {
   webpackFinal: async (config) => {
     config.module.rules.push({
       test: /\.scss$/,
-      use: ["vue-style-loader","css-loader","sass-loader"],
+      use: ["vue-style-loader", "css-loader", "sass-loader"],
     });
+
+    // Tiptap v2 packages have "type":"module" but also ship CJS builds via the
+    // "require" condition in their exports map.  Putting "require" first in
+    // conditionNames makes webpack prefer the CJS build for every @tiptap
+    // package (and any other package with a "require" export condition).
+    config.resolve.conditionNames = [
+      'require',
+      'import',
+      'module',
+      'browser',
+      'default',
+    ];
+
     return config;
   },
 };

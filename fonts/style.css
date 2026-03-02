@@ -25,6 +25,27 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.entypo--bookmark-wide-outline:before {
+  content: "\ea33";
+}
+.entypo--bookmark-wide-solid:before {
+  content: "\ea34";
+}
+.entypo--twinkle:before {
+  content: "\ea29";
+}
+.entypo--thumbs-down-empty:before {
+  content: "\ea30";
+}
+.entypo--thumbs-up-empty:before {
+  content: "\ea32";
+}
+.entypo--open-link:before {
+  content: "\ea28";
+}
+.entypo--checkmark-circled:before {
+  content: "\ea22";
+}
 .entypo--grid:before {
   content: "\ea1f";
 }
