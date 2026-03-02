@@ -2,7 +2,7 @@ import { ref } from 'vue';
 import TinyMceEditor from './TinyMceEditor.vue';
 
 export default {
-    title: 'Components/TinyMceEditor',
+    title: 'Components/Editors/TinyMCE Editor',
   component: TinyMceEditor,
 };
 

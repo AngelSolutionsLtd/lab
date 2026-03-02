@@ -3,7 +3,7 @@ import TippyWrapper from './TippyWrapper.vue';
 
 
 export default {
-  title: 'Components/TippyWrapper',
+  title: 'Components/Overlays/Tippy Wrapper',
   component: TippyWrapper,
   tags: ['autodocs'],
   argTypes: {

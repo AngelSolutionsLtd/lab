@@ -139,7 +139,7 @@
   <script>
   import vClickOutside from 'v-click-outside';
   import _ from 'lodash';
-  import appendToBody from '../Modules/Helpers/appendToBody';
+  import appendToBody from '../../Modules/Helpers/appendToBody';
   import checkbox from './Checkbox'
   
     export default {

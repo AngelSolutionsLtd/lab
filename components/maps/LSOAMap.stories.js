@@ -1,7 +1,7 @@
 import LSOAMap from './LSOAMap.vue'
 
 export default {
-  title: 'Map/LSOA Map',
+  title: 'Components/Maps/LSOA Map',
   component: LSOAMap,
   parameters: {
     layout: 'fullscreen',

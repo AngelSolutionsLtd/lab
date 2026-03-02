@@ -1,8 +1,8 @@
-import AppShell from '../components/AppShell.vue'
-import HeatMap from '../components/map/Heatmap.vue'
+import AppShell from '../../components/layout/AppShell.vue'
+import HeatMap from '../../components/maps/Heatmap.vue'
 
 export default {
-  title: 'Pages/Maps/HeatMap',
+  title: 'Pages/Maps/Heatmap',
   decorators: [
     () => ({
       components: { AppShell },

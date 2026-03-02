@@ -1,10 +1,10 @@
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
-import LSOAMap from '../components/map/LSOAMap.vue'
-import RangeSlider from '../components/RangeSlider.vue'
-import Drawer from '../components/Drawer.vue'
+import LSOAMap from '../../components/maps/LSOAMap.vue'
+import RangeSlider from '../../components/forms/RangeSlider.vue'
+import Drawer from '../../components/overlays/Drawer.vue'
 
 export default {
-  title: 'Pages/LSOA Map Prototype',
+  title: 'Pages/Maps/LSOA Map',
   parameters: {
     layout: 'fullscreen'
   }

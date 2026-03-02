@@ -1,9 +1,9 @@
-import AppShell from '../components/AppShell.vue'
-import MapLibreMap from '../components/map/MapLibreMap.vue'
-import MapKey from '../components/map/MapKey.vue'
+import AppShell from '../../components/layout/AppShell.vue'
+import MapLibreMap from '../../components/maps/MapLibreMap.vue'
+import MapKey from '../../components/maps/MapKey.vue'
 
 export default {
-  title: 'Pages/Maps',
+  title: 'Pages/Maps/Overview',
   decorators: [
     () => ({
       components: { AppShell },

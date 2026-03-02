@@ -1,7 +1,7 @@
 import SkeletonLoader from './SkeletonLoader.vue';
 
 export default {
-  title: 'Components/SkeletonLoader',
+  title: 'Components/Feedback/Skeleton Loader',
   component: SkeletonLoader,
   tags: ['autodocs'],
   argTypes: {

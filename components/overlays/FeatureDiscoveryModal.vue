@@ -6,124 +6,142 @@
         class="feature-discovery-overlay"
         @click.self="handleDismiss"
       >
-        <div class="feature-discovery-modal" role="dialog" :aria-label="feature.title">
+        <div
+          class="feature-discovery-modal"
+          :class="{ 'feature-discovery-modal--wide': showingTour }"
+          :style="[
+            showingTour ? { maxWidth: feature.tourMaxWidth || '900px' } : {},
+            feature.accentGradient ? {
+              border: '2px solid transparent',
+              backgroundImage: `linear-gradient(white, white), ${feature.accentGradient}`,
+              backgroundClip: 'padding-box, border-box',
+              backgroundOrigin: 'border-box'
+            } : {}
+          ]"
+          role="dialog"
+          :aria-label="feature.title"
+        >
           <button
             class="feature-discovery-modal__close"
             @click="handleDismiss"
             aria-label="Close"
             type="button"
           >
-            ×
+            <i class="entypo--cancel"></i>
           </button>
 
-          <!-- Main Content -->
+          <!-- Intro screen -->
           <div v-if="!showingTour" class="feature-discovery-modal__content">
-            <!-- Icon/Illustration -->
             <div class="feature-discovery-modal__icon">
-              <span class="feature-discovery-modal__icon-emoji">{{ feature.icon }}</span>
+              <i
+                :class="['feature-discovery-modal__icon-glyph', feature.icon]"
+                :style="feature.accentGradient ? { background: feature.accentGradient, color: 'white' } : {}"
+              ></i>
             </div>
 
-            <!-- Headline -->
-            <h2 class="feature-discovery-modal__title">
-              {{ feature.title }}
-            </h2>
+            <h2 class="feature-discovery-modal__title">{{ feature.title }}</h2>
 
-            <!-- Description -->
-            <p class="feature-discovery-modal__description">
-              {{ feature.description }}
-            </p>
+            <p class="feature-discovery-modal__description">{{ feature.description }}</p>
 
-            <!-- Benefits List -->
             <ul v-if="feature.benefits && feature.benefits.length" class="feature-discovery-modal__benefits">
               <li
                 v-for="(benefit, index) in feature.benefits"
                 :key="index"
                 class="feature-discovery-modal__benefit"
               >
-                <span class="feature-discovery-modal__benefit-icon">✓</span>
+                <i class="entypo--check feature-discovery-modal__benefit-icon"></i>
                 {{ benefit }}
               </li>
             </ul>
 
-            <!-- Actions -->
             <div class="feature-discovery-modal__actions">
-              <button
-                class="btn btn--primary"
-                @click="startTour"
-                type="button"
-              >
+              <button :class="['btn', feature.ctaClass || 'btn--secondary']" @click="startTour" type="button">
+                <i v-if="feature.ctaIcon" :class="feature.ctaIcon"></i>
                 {{ feature.tourCta || 'Show me how' }}
               </button>
-              <button
-                class="btn btn--tertiary"
-                @click="handleDismiss"
-                type="button"
-              >
+              <button class="btn btn--tertiary" @click="handleDismiss" type="button">
                 Maybe later
               </button>
             </div>
           </div>
 
-          <!-- Tour Steps -->
-          <div v-else class="feature-discovery-modal__tour">
-            <div class="feature-discovery-modal__tour-progress">
-              <div
-                v-for="(step, index) in feature.tourSteps"
-                :key="index"
-                class="feature-discovery-modal__tour-dot"
-                :class="{ 'is-active': index === currentStepIndex }"
-              ></div>
-            </div>
-
-            <div class="feature-discovery-modal__tour-step">
-              <div class="feature-discovery-modal__tour-number">
-                Step {{ currentStepIndex + 1 }} of {{ feature.tourSteps.length }}
-              </div>
-
-              <h3 class="feature-discovery-modal__tour-title">
-                {{ currentStep.title }}
-              </h3>
-
-              <p class="feature-discovery-modal__tour-description">
-                {{ currentStep.description }}
-              </p>
-
-              <!-- Optional Tour Step Image/Illustration -->
-              <div
+          <!-- Tour -->
+          <div v-else class="feature-discovery-modal__tour" :class="{ 'feature-discovery-modal__tour--stacked': feature.tourLayout === 'stacked' }">
+            <!-- Left: image panel (split layout only) -->
+            <div v-if="feature.tourLayout !== 'stacked'" class="feature-discovery-modal__tour-media">
+              <img
                 v-if="currentStep.image"
-                class="feature-discovery-modal__tour-image"
+                :src="currentStep.image"
+                :alt="currentStep.title"
+                class="feature-discovery-modal__tour-media-img"
+              />
+              <div
+                v-else
+                class="feature-discovery-modal__tour-media-placeholder"
+                :style="feature.accentGradient ? { background: feature.accentGradient } : {}"
               >
-                <img :src="currentStep.image" :alt="currentStep.title" />
+                <i
+                  :class="['feature-discovery-modal__tour-media-icon', feature.icon]"
+                  :style="feature.accentGradient ? { color: 'white', opacity: '0.9' } : {}"
+                ></i>
               </div>
             </div>
 
-            <div class="feature-discovery-modal__tour-actions">
-              <button
-                v-if="currentStepIndex > 0"
-                class="btn btn--tertiary"
-                @click="previousStep"
-                type="button"
-              >
-                Back
-              </button>
-              <button
-                v-if="currentStepIndex < feature.tourSteps.length - 1"
-                class="btn btn--primary"
-                @click="nextStep"
-                type="button"
-              >
-                Next
-              </button>
-              <button
-                v-else
-                class="btn btn--primary"
-                @click="completeTour"
-                type="button"
-              >
-                Got it!
-              </button>
+            <!-- Content body -->
+            <div class="feature-discovery-modal__tour-body">
+              <div class="feature-discovery-modal__tour-step">
+                <div class="feature-discovery-modal__tour-number">
+                  Step {{ currentStepIndex + 1 }} of {{ feature.tourSteps.length }}
+                </div>
+                <h3 class="feature-discovery-modal__tour-title">{{ currentStep.title }}</h3>
+                <p v-if="currentStep.description" class="feature-discovery-modal__tour-description">{{ currentStep.description }}</p>
+                <ul v-if="currentStep.points && currentStep.points.length" class="feature-discovery-modal__tour-points">
+                  <li v-for="(point, i) in currentStep.points" :key="i" class="feature-discovery-modal__tour-point">
+                    {{ point }}
+                  </li>
+                </ul>
+              </div>
+
+              <div class="feature-discovery-modal__tour-footer">
+                <div class="feature-discovery-modal__tour-progress">
+                  <div
+                    v-for="(step, index) in feature.tourSteps"
+                    :key="index"
+                    class="feature-discovery-modal__tour-dot"
+                    :class="{ 'is-active': index === currentStepIndex }"
+                    :style="index === currentStepIndex && feature.accentGradient ? { background: feature.accentGradient } : {}"
+                  ></div>
+                </div>
+                <div class="feature-discovery-modal__tour-actions">
+                  <button
+                    v-if="currentStepIndex > 0"
+                    class="btn btn--tertiary"
+                    @click="previousStep"
+                    type="button"
+                  >
+                    <i class="entypo--left-open"></i> Back
+                  </button>
+                  <button
+                    v-if="currentStepIndex < feature.tourSteps.length - 1"
+                    :class="['btn', feature.ctaClass || 'btn--secondary']"
+                    @click="nextStep"
+                    type="button"
+                  >
+                    Next <i class="entypo--right-open"></i>
+                  </button>
+                  <button
+                    v-else
+                    :class="['btn', feature.ctaClass || 'btn--secondary']"
+                    @click="completeTour"
+                    type="button"
+                  >
+                    <i class="entypo--check"></i> Got it!
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
+
         </div>
       </div>
     </Transition>
@@ -132,6 +150,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
+import '../../fonts/style.css';
 
 const props = defineProps({
   id: {
@@ -145,13 +164,11 @@ const props = defineProps({
   feature: {
     type: Object,
     required: true,
-    validator: (value) => {
-      return value.title && value.description && value.icon;
-    }
+    validator: (value) => value.title && value.description && value.icon
   },
   dismissBehavior: {
     type: String,
-    default: 'session', // 'session', 'permanent', 'temporary'
+    default: 'session',
     validator: (value) => ['session', 'permanent', 'temporary', 'none'].includes(value)
   },
   dismissDurationDays: {
@@ -162,66 +179,43 @@ const props = defineProps({
 
 const emit = defineEmits(['dismiss', 'tour-start', 'tour-complete', 'tour-step']);
 
-// State
 const isVisible = ref(false);
 const showingTour = ref(false);
 const currentStepIndex = ref(0);
 
-// Computed
 const storageKey = computed(() => `featureDiscovery:${props.id}`);
 const currentStep = computed(() => {
-  if (!props.feature.tourSteps || !props.feature.tourSteps.length) return null;
+  if (!props.feature.tourSteps?.length) return null;
   return props.feature.tourSteps[currentStepIndex.value];
 });
 
-// Methods
 const checkDismissalState = () => {
   if (props.dismissBehavior === 'none') return false;
-
   if (props.dismissBehavior === 'session') {
     return sessionStorage.getItem(storageKey.value) !== null;
   }
-
   if (props.dismissBehavior === 'permanent' || props.dismissBehavior === 'temporary') {
     try {
       const stored = localStorage.getItem(storageKey.value);
       if (!stored) return false;
-
       const data = JSON.parse(stored);
-
       if (props.dismissBehavior === 'permanent') return true;
-
-      // Temporary dismissal with expiry
-      const dismissedAt = data.dismissedAt;
-      const expiryTime = dismissedAt + (props.dismissDurationDays * 24 * 60 * 60 * 1000);
-      const isExpired = Date.now() > expiryTime;
-
-      if (isExpired) {
-        localStorage.removeItem(storageKey.value);
-        return false;
-      }
-
+      const isExpired = Date.now() > data.dismissedAt + (props.dismissDurationDays * 86400000);
+      if (isExpired) { localStorage.removeItem(storageKey.value); return false; }
       return true;
     } catch (e) {
-      console.error('Error reading dismissal state:', e);
       return false;
     }
   }
-
   return false;
 };
 
 const storeDismissal = () => {
   const data = { dismissedAt: Date.now() };
-
   if (props.dismissBehavior === 'session') {
     sessionStorage.setItem(storageKey.value, JSON.stringify(data));
-  } else if (props.dismissBehavior === 'permanent' || props.dismissBehavior === 'temporary') {
-    try {
-      localStorage.setItem(storageKey.value, JSON.stringify(data));
-    } catch (e) {
-      console.error('Error storing dismissal state:', e);
-    }
+  } else if (['permanent', 'temporary'].includes(props.dismissBehavior)) {
+    try { localStorage.setItem(storageKey.value, JSON.stringify(data)); } catch (e) {}
   }
 };
 
@@ -234,12 +228,7 @@ const handleDismiss = () => {
 };
 
 const startTour = () => {
-  if (!props.feature.tourSteps || !props.feature.tourSteps.length) {
-    console.warn('No tour steps defined');
-    handleDismiss();
-    return;
-  }
-
+  if (!props.feature.tourSteps?.length) { handleDismiss(); return; }
   showingTour.value = true;
   currentStepIndex.value = 0;
   emit('tour-start', { id: props.id, timestamp: Date.now() });
@@ -248,22 +237,14 @@ const startTour = () => {
 const nextStep = () => {
   if (currentStepIndex.value < props.feature.tourSteps.length - 1) {
     currentStepIndex.value++;
-    emit('tour-step', {
-      id: props.id,
-      stepIndex: currentStepIndex.value,
-      timestamp: Date.now()
-    });
+    emit('tour-step', { id: props.id, stepIndex: currentStepIndex.value, timestamp: Date.now() });
   }
 };
 
 const previousStep = () => {
   if (currentStepIndex.value > 0) {
     currentStepIndex.value--;
-    emit('tour-step', {
-      id: props.id,
-      stepIndex: currentStepIndex.value,
-      timestamp: Date.now()
-    });
+    emit('tour-step', { id: props.id, stepIndex: currentStepIndex.value, timestamp: Date.now() });
   }
 };
 
@@ -277,31 +258,19 @@ const show = () => {
   isVisible.value = true;
 };
 
-// Lifecycle
-onMounted(() => {
-  if (props.enabled) {
-    show();
-  }
-});
+onMounted(() => { if (props.enabled) show(); });
 
-watch(() => props.enabled, (newValue) => {
-  if (newValue) {
-    show();
-  } else {
-    isVisible.value = false;
-  }
+watch(() => props.enabled, (val) => {
+  if (val) show();
+  else isVisible.value = false;
 });
 </script>
 
 <style scoped>
 .feature-discovery-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(4px);
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -312,262 +281,306 @@ watch(() => props.enabled, (newValue) => {
 .feature-discovery-modal {
   position: relative;
   background: white;
-  border-radius: 16px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  border-radius: 6px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.22);
   max-width: 560px;
   width: 100%;
   max-height: 90vh;
-  overflow-y: auto;
+  overflow: hidden;
   font-family: 'Open Sans', sans-serif;
-  animation: modal-slide-up 0.3s ease-out;
 }
 
-@keyframes modal-slide-up {
-  from {
-    transform: translateY(20px);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
 
+
+/* Close */
 .feature-discovery-modal__close {
   position: absolute;
-  top: 16px;
-  right: 16px;
-  background: rgba(0, 0, 0, 0.05);
+  top: 12px;
+  right: 12px;
+  background: none;
   border: none;
-  font-size: 28px;
-  line-height: 1;
-  color: #666;
+  color: #888;
   cursor: pointer;
-  padding: 0;
-  width: 32px;
-  height: 32px;
+  width: 28px;
+  height: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 50%;
-  transition: all 0.2s;
+  border-radius: 4px;
+  transition: background 0.15s, color 0.15s;
   z-index: 1;
+  font-size: 16px;
 }
-
 .feature-discovery-modal__close:hover {
-  background-color: rgba(0, 0, 0, 0.1);
-  color: #1a1a1a;
-  transform: rotate(90deg);
+  background: #f0f0f0;
+  color: #333;
 }
 
+/* ── Intro screen ── */
 .feature-discovery-modal__content {
-  padding: 48px 40px 40px;
+  padding: 40px 40px 32px;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .feature-discovery-modal__icon {
-  margin-bottom: 24px;
+  margin-bottom: 16px;
 }
 
-.feature-discovery-modal__icon-emoji {
-  font-size: 64px;
-  line-height: 1;
+.feature-discovery-modal__icon-glyph {
+  font-size: 32px;
+  width: 64px;
+  height: 64px;
+  line-height: 64px;
   display: inline-block;
-  animation: bounce-in 0.6s ease-out;
-}
-
-@keyframes bounce-in {
-  0% {
-    transform: scale(0);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-  100% {
-    transform: scale(1);
-  }
+  text-align: center;
+  border-radius: 50%;
+  background: #e4eaee;
+  color: #2c3e4f;
 }
 
 .feature-discovery-modal__title {
-  margin: 0 0 16px;
-  font-size: 28px;
+  margin: 0 0 10px;
+  font-size: 20px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: #222;
   line-height: 1.3;
 }
 
 .feature-discovery-modal__description {
-  margin: 0 0 24px;
-  font-size: 16px;
+  margin: 0 0 20px;
+  font-size: 14px;
   line-height: 1.6;
-  color: #4a4a4a;
+  color: #555;
+  max-width: 440px;
 }
 
 .feature-discovery-modal__benefits {
   list-style: none;
   padding: 0;
-  margin: 0 0 32px;
+  margin: 0 0 28px;
   text-align: left;
+  width: 100%;
 }
 
 .feature-discovery-modal__benefit {
   display: flex;
   align-items: flex-start;
-  gap: 12px;
-  padding: 10px 0;
-  font-size: 15px;
-  color: #2a2a2a;
-  line-height: 1.5;
+  gap: 10px;
+  padding: 8px 0;
+  font-size: 14px;
+  color: #333;
+  line-height: 1.4;
+  border-top: 1px solid #f0f0f0;
+}
+.feature-discovery-modal__benefit:last-child {
+  border-bottom: 1px solid #f0f0f0;
 }
 
 .feature-discovery-modal__benefit-icon {
   flex-shrink: 0;
-  width: 20px;
-  height: 20px;
-  background: #10b981;
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: bold;
-  margin-top: 2px;
+  font-size: 16px;
+  color: #2c3e4f;
+  margin-top: 1px;
 }
 
 .feature-discovery-modal__actions {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
+  width: 100%;
+  padding-top: 4px;
 }
-
 .feature-discovery-modal__actions .btn {
   width: 100%;
-  padding: 14px 24px;
-  font-size: 16px;
-  font-weight: 600;
 }
 
-/* Tour Styles */
+/* ── Tour: GIF left, content right ── */
 .feature-discovery-modal__tour {
-  padding: 40px;
-}
-
-.feature-discovery-modal__tour-progress {
   display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+
+/* Stacked layout — no media panel, full-width content */
+.feature-discovery-modal__tour--stacked {
+  flex-direction: column;
+}
+
+.feature-discovery-modal__tour--stacked .feature-discovery-modal__tour-body {
+  flex: 1;
+}
+
+.feature-discovery-modal__tour--stacked .feature-discovery-modal__tour-step {
+  padding: 28px 36px 12px;
+}
+
+.feature-discovery-modal__tour--stacked .feature-discovery-modal__tour-footer {
+  padding: 14px 36px;
+}
+
+/* Left image panel — width drives the natural GIF height for both sides */
+.feature-discovery-modal__tour-media {
+  width: 55%;
+  flex-shrink: 0;
+  background: #f0f2f5;
+  border-right: 1px solid #e8e8e8;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
   justify-content: center;
-  gap: 8px;
-  margin-bottom: 32px;
 }
 
-.feature-discovery-modal__tour-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: #d0d0d0;
-  transition: all 0.3s;
+.feature-discovery-modal__tour-media-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
 }
 
-.feature-discovery-modal__tour-dot.is-active {
-  width: 24px;
-  border-radius: 4px;
-  background: #0066cc;
+.feature-discovery-modal__tour-media-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.feature-discovery-modal__tour-media-icon {
+  font-size: 48px;
+  color: #c8d4e0;
+}
+
+/* Right content body */
+.feature-discovery-modal__tour-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.feature-discovery-modal__tour-step {
+  flex: 1;
+  padding: 24px 24px 12px;
+  overflow-y: auto;
 }
 
 .feature-discovery-modal__tour-number {
-  font-size: 13px;
-  font-weight: 600;
-  color: #0066cc;
+  font-size: 11px;
+  font-weight: 700;
+  color: #2c3e4f;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-bottom: 16px;
+  letter-spacing: 0.6px;
+  margin-bottom: 10px;
 }
 
 .feature-discovery-modal__tour-title {
-  margin: 0 0 16px;
-  font-size: 24px;
+  margin: 0 0 12px;
+  font-size: 20px;
   font-weight: 700;
-  color: #1a1a1a;
+  color: #222;
   line-height: 1.3;
 }
 
 .feature-discovery-modal__tour-description {
-  margin: 0 0 24px;
-  font-size: 16px;
+  margin: 0;
+  font-size: 15px;
   line-height: 1.6;
-  color: #4a4a4a;
+  color: #555;
 }
 
-.feature-discovery-modal__tour-image {
-  margin-bottom: 24px;
-  border-radius: 12px;
-  overflow: hidden;
-  background: #f5f5f5;
+.feature-discovery-modal__tour-points {
+  list-style: disc;
+  padding-left: 18px;
+  margin: 0;
 }
 
-.feature-discovery-modal__tour-image img {
-  width: 100%;
-  height: auto;
-  display: block;
+.feature-discovery-modal__tour-point {
+  padding: 5px 0;
+  font-size: 15px;
+  color: #333;
+  line-height: 1.5;
+}
+
+/* Footer bar */
+.feature-discovery-modal__tour-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 28px;
+  border-top: 1px solid #f0f0f0;
+  flex-shrink: 0;
+}
+
+.feature-discovery-modal__tour-progress {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.feature-discovery-modal__tour-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #d0d0d0;
+  transition: all 0.25s;
+}
+
+.feature-discovery-modal__tour-dot.is-active {
+  width: 20px;
+  border-radius: 4px;
+  background: #2c3e4f;
 }
 
 .feature-discovery-modal__tour-actions {
   display: flex;
-  gap: 12px;
-  justify-content: space-between;
-}
-
-.feature-discovery-modal__tour-actions .btn {
-  flex: 1;
-  padding: 12px 24px;
-  font-size: 15px;
-  font-weight: 600;
+  gap: 8px;
 }
 
 /* Transitions */
 .modal-fade-enter-active,
 .modal-fade-leave-active {
-  transition: opacity 0.3s ease;
+  transition: opacity 0.2s ease;
 }
-
 .modal-fade-enter-from,
 .modal-fade-leave-to {
   opacity: 0;
 }
-
 .modal-fade-enter-active .feature-discovery-modal,
 .modal-fade-leave-active .feature-discovery-modal {
-  transition: transform 0.3s ease;
+  transition: transform 0.2s ease;
 }
-
 .modal-fade-enter-from .feature-discovery-modal {
-  transform: scale(0.9) translateY(20px);
+  transform: scale(0.97) translateY(10px);
 }
-
 .modal-fade-leave-to .feature-discovery-modal {
-  transform: scale(0.9) translateY(20px);
+  transform: scale(0.97) translateY(10px);
 }
 
-/* Responsive */
-@media (max-width: 640px) {
-  .feature-discovery-modal__content {
-    padding: 40px 24px 32px;
-  }
-
+/* Responsive — collapse to stacked on small screens */
+@media (max-width: 600px) {
   .feature-discovery-modal__tour {
-    padding: 32px 24px;
+    flex-direction: column;
   }
 
-  .feature-discovery-modal__title {
-    font-size: 24px;
+  .feature-discovery-modal__tour-media {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid #e8e8e8;
   }
 
-  .feature-discovery-modal__tour-title {
-    font-size: 20px;
+  .feature-discovery-modal__tour-step {
+    padding: 16px 20px 8px;
   }
 
-  .feature-discovery-modal__icon-emoji {
-    font-size: 48px;
+  .feature-discovery-modal__tour-footer {
+    padding: 12px 20px;
+  }
+
+  .feature-discovery-modal__content {
+    padding: 32px 24px 24px;
   }
 }
 </style>

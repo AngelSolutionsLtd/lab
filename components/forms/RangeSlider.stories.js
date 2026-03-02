@@ -2,7 +2,7 @@ import { ref } from 'vue'
 import RangeSlider from './RangeSlider.vue'
 
 export default {
-  title: 'Components/Range Slider',
+  title: 'Components/Forms/Range Slider',
   component: RangeSlider,
   tags: ['autodocs'],
   parameters: {

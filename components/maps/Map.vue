@@ -20,7 +20,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { createApp, h } from 'vue';
 import SvgMapMarker from './Marker.vue';
-import Drawer from '../Drawer.vue';
+import Drawer from '../overlays/Drawer.vue';
 
 const markerSizes = {
   sm: { iconSize: [40, 46], iconAnchor: [20, 46] },

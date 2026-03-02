@@ -2,7 +2,7 @@ import ResponsiveTabs from './ResponsiveTabs.vue';
 import NavTabs from './NavTabs.vue';
 
 export default {
-	title: 'Components/ResponsiveTabs',
+	title: 'Components/Navigation/Responsive Tabs',
 	component: ResponsiveTabs,
 	tags: ['autodocs'],
 	argTypes: {

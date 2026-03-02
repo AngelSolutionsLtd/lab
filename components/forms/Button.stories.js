@@ -1,7 +1,7 @@
 import MyButton from './Button.vue';
 
 export default {
-  title: 'Components/Button',
+  title: 'Components/Forms/Button',
   component: MyButton,
   tags: ['autodocs'],
   argTypes: {

@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import Scroll from "../Modules/Helpers/scroll";
+import Scroll from "../../Modules/Helpers/scroll";
 export default {
     name: "DrawerComponent",
 	props: {

@@ -1,8 +1,8 @@
-import AppShell from '../components/AppShell.vue'
-import ClusterMap from '../components/map/ClusterMap.vue'
+import AppShell from '../../components/layout/AppShell.vue'
+import ClusterMap from '../../components/maps/ClusterMap.vue'
 
 export default {
-  title: 'Pages/Maps/ClusterMap',
+  title: 'Pages/Maps/Cluster Map',
   decorators: [
     () => ({
       components: { AppShell },

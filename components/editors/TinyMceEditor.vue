@@ -21,7 +21,7 @@
 <script>
 import 'tinymce';
 import Editor from '@tinymce/tinymce-vue';
-import '../Modules/TildaPlugin/tilda.js';
+import '../../Modules/TildaPlugin/tilda.js';
 
 import 'tinymce/icons/default/icons.min.js';
 import 'tinymce/themes/silver/theme.min.js';
@@ -35,7 +35,7 @@ import 'tinymce/plugins/fullscreen';
 
 import 'tinymce/skins/ui/oxide/skin.min.css';
 import 'tinymce/skins/content/default/content.min.css';
-import "../fonts/style.css";
+import "../../fonts/style.css";
 
 export default {
   name: 'TinyMceEditor',

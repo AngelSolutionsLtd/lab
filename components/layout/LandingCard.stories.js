@@ -1,7 +1,7 @@
 import LandingCard from './LandingCard.vue';
 
 export default {
-	title: 'Components/LandingCard',
+	title: 'Components/Layout/Landing Card',
 	component: LandingCard,
 	tags: ['autodocs'],
 	argTypes: {

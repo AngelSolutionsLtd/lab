@@ -1,7 +1,7 @@
 import SvgMapMarker from './Marker.vue';
 
 export default {
-  title: 'Components/Map/Marker',
+  title: 'Components/Maps/Marker',
   component: SvgMapMarker,
   tags: ['autodocs'],
   argTypes: {

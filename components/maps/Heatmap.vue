@@ -22,7 +22,7 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
-import Drawer from '../Drawer.vue'
+import Drawer from '../overlays/Drawer.vue'
 
 const STACK_COUNT = 4
 const STACK_COORDS = [-2.9916, 53.4084]

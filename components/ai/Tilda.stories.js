@@ -1,8 +1,8 @@
 import { ref } from 'vue';
-import TinyMceEditor from './TinyMceEditor.vue';
-import Modal from './Modal';
-import Checkbox from './Checkbox';
-import '../Modules/TildaPlugin/tilda.js';
+import TinyMceEditor from '../editors/TinyMceEditor.vue';
+import Modal from '../overlays/Modal';
+import Checkbox from '../forms/Checkbox';
+import '../../Modules/TildaPlugin/tilda.js';
 
 export default {
   title: 'Components/Ai/Tilda',

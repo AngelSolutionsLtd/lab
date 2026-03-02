@@ -1,7 +1,7 @@
 import ClusterMap from './ClusterMap.vue'
 
 export default {
-  title: 'Map/Cluster Map',
+  title: 'Components/Maps/Cluster Map',
   component: ClusterMap,
   parameters: {
     layout: 'fullscreen'

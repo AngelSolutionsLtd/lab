@@ -1,8 +1,8 @@
 import NavTabs from './NavTabs.vue';
-import TippyWrapper from './TippyWrapper.vue';
+import TippyWrapper from '../overlays/TippyWrapper.vue';
 
 export default {
-	title: 'Components/NavTabs',
+	title: 'Components/Navigation/Nav Tabs',
 	component: NavTabs,
 	tags: ['autodocs'],
 	argTypes: {

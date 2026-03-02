@@ -1,7 +1,7 @@
 import Map from "./Map.vue";
 
 export default {
-  title: "Components/Map/Map",
+  title: "Components/Maps/Map",
   component: Map,
 };
 

@@ -2,7 +2,7 @@ import UserMessage from './UserMessage.vue';
 
 // More on how to set up stories at: https://storybook.js.org/docs/writing-stories
 export default {
-  title: 'Components/UserMessage',
+  title: 'Components/Feedback/User Message',
   component: UserMessage,
   tags: ['autodocs'],
   render: (args, { argTypes }) => ({

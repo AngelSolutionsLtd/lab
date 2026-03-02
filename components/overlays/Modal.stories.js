@@ -2,7 +2,7 @@ import { ref } from 'vue';
 import Modal from './Modal.vue';
 
 export default {
-  title: 'Components/Modal',
+  title: 'Components/Overlays/Modal',
   component: Modal,
   tags: ['autodocs'],
   argTypes: {

@@ -35,8 +35,8 @@
 </template>
 
 <script>
-import Scroll from "../Modules/Helpers/scroll";
-import Loader from "./misc/LoaderPspLogo.vue";
+import Scroll from "../../Modules/Helpers/scroll";
+import Loader from "../misc/LoaderPspLogo.vue";
 
 export default  {
   name: 'Popup',

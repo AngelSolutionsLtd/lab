@@ -3,7 +3,7 @@
 import SearchableDropdown from './SearchableDropdown.vue';
 
 export default {
-  title: 'Components/SearchableDropdown',
+  title: 'Components/Forms/Searchable Dropdown',
   component: SearchableDropdown,
   argTypes: {
     value: { control: 'object' }, // Adjust control based on your prop types
