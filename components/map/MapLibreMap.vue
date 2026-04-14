@@ -1,5 +1,6 @@
 <template>
-  <div class="map-wrapper">
+  <div class="map-wrapper" :style="{ height: mapHeight, minHeight: mapHeight }">
+    <slot />
     <div ref="mapContainer" class="map-container"></div>
     <pre v-if="errorMsg" class="map-error">{{ errorMsg }}</pre>
   </div>
@@ -12,7 +13,8 @@ import 'maplibre-gl/dist/maplibre-gl.css'
 import Marker from './Marker.vue'
 
 const props = defineProps({
-  markers: { type: Array, default: () => [] }
+  markers: { type: Array, default: () => [] },
+  mapHeight: { type: String, default: '750px' }
 })
 
 const mapContainer = ref(null)
@@ -137,13 +139,16 @@ onBeforeUnmount(() => {
 .map-wrapper {
   position: relative;
   width: 100%;
-  height: 750px;
-  min-height: 750px;
 }
 
 .map-container {
   width: 100%;
   height: 100%;
+}
+
+.map-wrapper .maplibregl-ctrl-top-left {
+  top: 0;
+  left: 0;
 }
 
 .map-error {
