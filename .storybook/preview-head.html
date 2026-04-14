@@ -1,6 +1,21 @@
 <link rel="stylesheet" href="https://perspective.angelsolutions.co.uk/Perspective/App_Styles/css/styles.css?37.3.WM1"/>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:400,600,400italic,700,700italic%7cOpen+Sans+Condensed:300,700">
 <style>
+    /* Override the entypo @font-face declared in the Perspective external stylesheet
+       to use our locally-served copy, avoiding intermittent CORS errors from their server.
+       Being declared after the external link, this takes precedence in modern browsers. */
+    @font-face {
+        font-family: 'entypo';
+        src:
+            url('/fonts/entypo.ttf?76kg9z') format('truetype'),
+            url('/fonts/entypo.woff?76kg9z') format('woff'),
+            url('/fonts/entypo.svg?76kg9z#entypo') format('svg');
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+    }
+</style>
+<style>
     .ai-button {
         border: none;
         display: inline-flex;
@@ -29,4 +44,12 @@
     .fullscreen-map-shell .page-footer { margin-top: -45px !important; }
     .fullscreen-map-shell .page-footer .page-nav .page-nav__logo:after{font-weight: bold;}
     .matchmaker-drawer--key .side-drawer__inner .side-drawer__header{background-color: transparent;}
+    .side-drawer--no-overlay {
+        content: none !important;
+    }
+    .page-width {
+        margin: 0 auto;
+        max-width: 1300px;
+        width: 95%;
+    }
 </style>
