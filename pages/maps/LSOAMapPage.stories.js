@@ -17,6 +17,12 @@ export const Default = {
       const isKeyDrawerOpen = ref(false)
       const isDetailDrawerOpen = ref(false)
       const selectedLSOA = ref(null)
+      const HIDDEN_KEYS = new Set(['FID', 'LSOA21CD', 'LSOA21NM', 'LSOA21NMW', 'LAT', 'LONG', 'Attendance_Perc', 'TotalChildren', 'attendance_colour', 'GlobalID', 'LSOA'])
+      const selectedLSOAExtra = computed(() => {
+        if (!selectedLSOA.value) return {}
+        return Object.fromEntries(Object.entries(selectedLSOA.value).filter(([k]) => !HIDDEN_KEYS.has(k)))
+      })
+
       const threshold = ref(65)
       const fillOpacity = computed(() => (threshold.value / 100) * 0.6)
 
@@ -34,6 +40,7 @@ export const Default = {
         isKeyDrawerOpen,
         isDetailDrawerOpen,
         selectedLSOA,
+        selectedLSOAExtra,
         threshold,
         fillOpacity,
         onSelect,
@@ -211,7 +218,8 @@ export const Default = {
 
           <div style="padding:20px;">
             <template v-if="selectedLSOA">
-              <div style="background:#f8f4fa; border:1px solid #e4d4ea; border-radius:8px; padding:16px;">
+              <!-- Identity card -->
+              <div style="background:#f8f4fa; border:1px solid #e4d4ea; border-radius:8px; padding:16px; margin-bottom:16px;">
                 <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:#7b2d8b; margin-bottom:6px;">
                   {{ selectedLSOA.LSOA21CD }}
                 </div>
@@ -222,6 +230,29 @@ export const Default = {
                   {{ Number(selectedLSOA.LAT).toFixed(5) }}, {{ Number(selectedLSOA.LONG).toFixed(5) }}
                 </div>
               </div>
+
+              <!-- Attendance highlight -->
+              <div style="background:#f0e6f6; border:1px solid #d4aee8; border-radius:8px; padding:14px 16px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:13px; font-weight:600; color:#5a1f63;">Attendance</span>
+                <span style="font-size:22px; font-weight:700; color:#7b2d8b;">
+                  {{ selectedLSOA.Attendance_Perc != null ? Number(selectedLSOA.Attendance_Perc).toFixed(1) + '%' : '—' }}
+                </span>
+              </div>
+
+              <!-- Stats rows -->
+              <div style="display:flex; flex-direction:column; gap:0;">
+                <div style="display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid #f0f0f0;">
+                  <span style="font-size:12px; color:#888;">Total Children</span>
+                  <span style="font-size:13px; font-weight:600; color:#222;">{{ selectedLSOA.TotalChildren ?? '—' }}</span>
+                </div>
+                <div v-for="(val, key) in selectedLSOAExtra" :key="key" style="display:flex; justify-content:space-between; padding:9px 0; border-bottom:1px solid #f0f0f0;">
+                  <span style="font-size:12px; color:#888;">{{ key }}</span>
+                  <span style="font-size:13px; font-weight:600; color:#222;">{{ val ?? '—' }}</span>
+                </div>
+              </div>
+            </template>
+            <template v-else>
+              <p style="font-size:13px; color:#aaa; text-align:center; margin-top:40px;">Click an area on the map to view details.</p>
             </template>
           </div>
         </Drawer>

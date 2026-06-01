@@ -15,14 +15,43 @@
     <pre v-if="errorMsg" class="map-error">{{ errorMsg }}</pre>
 
     <!-- Info panel shown on click -->
-    <div v-if="selectedFeature" class="lsoa-info-panel">
-      <button class="lsoa-info-panel__close" @click="selectedFeature = null">✕</button>
-      <div class="lsoa-info-panel__code">{{ selectedFeature.LSOA21CD }}</div>
-      <div class="lsoa-info-panel__name">{{ selectedFeature.LSOA21NM }}</div>
-      <div class="lsoa-info-panel__coords">
-        <span>{{ selectedFeature.LAT?.toFixed(5) }}, {{ selectedFeature.LONG?.toFixed(5) }}</span>
+    <Transition name="panel-slide">
+      <div v-if="selectedFeature" class="lsoa-info-panel">
+        <div class="lsoa-info-panel__header">
+          <div>
+            <div class="lsoa-info-panel__code">{{ selectedFeature.LSOA21CD }}</div>
+            <div class="lsoa-info-panel__name">{{ selectedFeature.LSOA21NM }}</div>
+          </div>
+          <button class="lsoa-info-panel__close" @click="selectedFeature = null">✕</button>
+        </div>
+
+        <div class="lsoa-info-panel__body">
+          <div class="lsoa-info-panel__stat lsoa-info-panel__stat--highlight">
+            <span class="lsoa-info-panel__stat-label">Attendance</span>
+            <span class="lsoa-info-panel__stat-value">{{ selectedFeature.Attendance_Perc != null ? selectedFeature.Attendance_Perc.toFixed(1) + '%' : '—' }}</span>
+          </div>
+          <div class="lsoa-info-panel__stat">
+            <span class="lsoa-info-panel__stat-label">Total Children</span>
+            <span class="lsoa-info-panel__stat-value">{{ selectedFeature.TotalChildren ?? '—' }}</span>
+          </div>
+          <div class="lsoa-info-panel__stat">
+            <span class="lsoa-info-panel__stat-label">Coordinates</span>
+            <span class="lsoa-info-panel__stat-value">{{ selectedFeature.LAT?.toFixed(5) }}, {{ selectedFeature.LONG?.toFixed(5) }}</span>
+          </div>
+
+          <div class="lsoa-info-panel__divider"></div>
+
+          <div
+            v-for="(val, key) in selectedFeatureExtra"
+            :key="key"
+            class="lsoa-info-panel__stat"
+          >
+            <span class="lsoa-info-panel__stat-label">{{ key }}</span>
+            <span class="lsoa-info-panel__stat-value">{{ val ?? '—' }}</span>
+          </div>
+        </div>
       </div>
-    </div>
+    </Transition>
 
     <!-- Layer toggle -->
     <label class="lsoa-layer-toggle" :title="lsoaVisible ? 'Hide LSOA layer' : 'Show LSOA layer'">
@@ -38,13 +67,13 @@
       class="lsoa-tooltip"
       :style="{ left: tooltipPos.x + 'px', top: tooltipPos.y + 'px' }"
     >
-      {{ hoveredFeature.LSOA21NM }}
+      {{ hoveredFeature.LSOA21NM || hoveredFeature.LSOA }}
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 
@@ -72,12 +101,22 @@ const props = defineProps({
   /** Fill opacity (0–1) */
   fillOpacity: {
     type: Number,
-    default: 0.25
+    default: 0.85
   },
   /** Override the LSOA GeoJSON URL — useful when deploying to a CDN */
   geojsonUrl: {
     type: String,
-    default: './geo/LSOA.geojson'
+    default: './geo/southampton_lsoa.geojson'
+  },
+  /** Filter fitBounds to features whose LSOA21NM contains this string. Null fits all features. */
+  fitArea: {
+    type: String,
+    default: 'Southampton'
+  },
+  /** When true, colours each feature using its attendance_colour property instead of fillColor */
+  useAttendanceColour: {
+    type: Boolean,
+    default: true
   },
   /** Override the map wrapper height (any CSS value) */
   mapHeight: {
@@ -108,6 +147,16 @@ const selectedFeature = ref(null)
 const hoveredFeature = ref(null)
 const tooltipPos = ref({ x: 0, y: 0 })
 const lsoaVisible = ref(true)
+
+// Keys shown as dedicated stats — everything else goes in the "extra" section
+const PRIMARY_KEYS = new Set(['FID', 'LSOA21CD', 'LSOA21NM', 'LSOA21NMW', 'LAT', 'LONG', 'Attendance_Perc', 'TotalChildren', 'attendance_colour', 'GlobalID', 'LSOA'])
+
+const selectedFeatureExtra = computed(() => {
+  if (!selectedFeature.value) return {}
+  return Object.fromEntries(
+    Object.entries(selectedFeature.value).filter(([k]) => !PRIMARY_KEYS.has(k))
+  )
+})
 
 let hoveredId = null
 
@@ -195,7 +244,19 @@ function setupLayers(geojson) {
     type: 'fill',
     source: SOURCE_ID,
     paint: {
-      'fill-color': props.fillColor,
+      'fill-color': props.useAttendanceColour
+        ? [
+            'interpolate',
+            ['linear'],
+            ['get', 'Attendance_Perc'],
+            0,  '#67000d',
+            87, '#cb181d',
+            91, '#fc8d59',
+            94, '#fdcc8a',
+            97, '#a6d96a',
+            100, '#1a7837'
+          ]
+        : props.fillColor,
       'fill-opacity': [
         'case',
         ['boolean', ['feature-state', 'hover'], false],
@@ -254,7 +315,15 @@ function setupLayers(geojson) {
   // Click to select
   map.value.on('click', FILL_LAYER, (e) => {
     if (!e.features?.length) return
-    const feature = e.features[0].properties
+    const raw = e.features[0].properties
+    // MapLibre serialises properties — coerce numeric fields back
+    const feature = {
+      ...raw,
+      Attendance_Perc: raw.Attendance_Perc != null ? Number(raw.Attendance_Perc) : null,
+      TotalChildren:   raw.TotalChildren   != null ? Number(raw.TotalChildren)   : null,
+      LAT:             raw.LAT             != null ? Number(raw.LAT)             : null,
+      LONG:            raw.LONG            != null ? Number(raw.LONG)            : null,
+    }
     if (props.showPanel) selectedFeature.value = feature
     emit('select', feature)
   })
@@ -267,6 +336,29 @@ function setupLayers(geojson) {
       emit('deselect')
     }
   })
+}
+
+function fitToBounds(geojson) {
+  if (!map.value || !geojson?.features?.length) return
+  let minLng = Infinity, maxLng = -Infinity, minLat = Infinity, maxLat = -Infinity
+  function scan(coords) {
+    coords.forEach(c => {
+      if (Array.isArray(c[0])) scan(c)
+      else {
+        if (c[0] < minLng) minLng = c[0]
+        if (c[0] > maxLng) maxLng = c[0]
+        if (c[1] < minLat) minLat = c[1]
+        if (c[1] > maxLat) maxLat = c[1]
+      }
+    })
+  }
+  const features = props.fitArea
+    ? geojson.features.filter(f => f.properties?.LSOA21NM?.includes(props.fitArea))
+    : geojson.features
+  const target = features.length ? features : geojson.features
+  target.forEach(f => scan(f.geometry.coordinates))
+  if (!isFinite(minLng)) return
+  map.value.fitBounds([[minLng, minLat], [maxLng, maxLat]], { padding: 80, duration: 0, maxZoom: 10 })
 }
 
 onMounted(() => {
@@ -285,7 +377,9 @@ onMounted(() => {
 
     map.value.on('load', async () => {
       const geojson = await loadLSOA()
-      if (geojson) setupLayers(geojson)
+      if (!geojson) return
+      setupLayers(geojson)
+      fitToBounds(geojson)
     })
 
     map.value.on('error', (e) => {
@@ -392,29 +486,39 @@ onBeforeUnmount(() => {
 
 .lsoa-info-panel {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 300px;
   background: white;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  padding: 14px 16px;
-  min-width: 200px;
-  max-width: 280px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  border-left: 1px solid #ddd;
+  box-shadow: -4px 0 16px rgba(0, 0, 0, 0.1);
   z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.lsoa-info-panel__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 16px;
+  border-bottom: 1px solid #eee;
+  flex-shrink: 0;
 }
 
 .lsoa-info-panel__close {
-  position: absolute;
-  top: 8px;
-  right: 10px;
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 16px;
   color: #888;
   padding: 0;
   line-height: 1;
+  flex-shrink: 0;
+  margin-left: 8px;
+  margin-top: 2px;
 }
 
 .lsoa-info-panel__close:hover {
@@ -434,13 +538,61 @@ onBeforeUnmount(() => {
   font-size: 15px;
   font-weight: 600;
   color: #222;
-  margin-bottom: 6px;
-  padding-right: 20px;
+  line-height: 1.3;
 }
 
-.lsoa-info-panel__coords {
+.lsoa-info-panel__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.lsoa-info-panel__stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 7px 0;
+  border-bottom: 1px solid #f2f2f2;
+  gap: 12px;
+}
+
+.lsoa-info-panel__stat--highlight {
+  background: #f7f3ff;
+  margin: 0 -16px;
+  padding: 10px 16px;
+  border-bottom: 1px solid #e8dff5;
+}
+
+.lsoa-info-panel__stat-label {
   font-size: 12px;
   color: #666;
+  flex-shrink: 0;
+}
+
+.lsoa-info-panel__stat-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: #222;
+  text-align: right;
+}
+
+.lsoa-info-panel__divider {
+  height: 1px;
+  background: #eee;
+  margin: 8px 0;
+}
+
+.panel-slide-enter-active,
+.panel-slide-leave-active {
+  transition: transform 0.25s ease;
+}
+
+.panel-slide-enter-from,
+.panel-slide-leave-to {
+  transform: translateX(100%);
 }
 
 .lsoa-layer-toggle {
