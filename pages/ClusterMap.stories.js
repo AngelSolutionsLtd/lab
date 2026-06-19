@@ -20,10 +20,22 @@ const Template = (args) => ({
   setup() { return { args } },
   template: `
     <div style="position:relative;height:100vh;width:100%;">
-      <ClusterMap :key="args.remountKey" />
+      <ClusterMap :key="args.remountKey" :city="args.city" />
     </div>
   `
 })
+
+export const Liverpool = Template.bind({})
+Liverpool.args = {
+  remountKey: 'liverpool',
+  city: 'liverpool'
+}
+
+export const Southampton = Template.bind({})
+Southampton.args = {
+  remountKey: 'southampton',
+  city: 'southampton'
+}
 
 export const Default = Template.bind({})
 Default.args = { remountKey: 'default' }

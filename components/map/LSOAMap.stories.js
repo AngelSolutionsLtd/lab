@@ -61,6 +61,16 @@ export const London = {
   }
 }
 
+export const Southampton = {
+  args: {
+    center: [-1.4044, 50.9097],
+    zoom: 11,
+    fillColor: '#1a7fa0',
+    lineColor: '#125f7a',
+    fillOpacity: 0.3
+  }
+}
+
 export const HighContrast = {
   args: {
     center: [-1.5, 52.5],

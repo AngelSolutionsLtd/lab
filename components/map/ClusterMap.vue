@@ -2,6 +2,24 @@
   <div class="map-wrapper">
     <div ref="mapContainer" class="map-container"></div>
     <pre v-if="errorMsg" class="map-error">{{ errorMsg }}</pre>
+
+    <!-- LSOA layer toggle -->
+    <label v-if="showLSOA && lsoaLoaded" class="lsoa-layer-toggle" :title="lsoaVisible ? 'Hide LSOA layer' : 'Show LSOA layer'">
+      <span class="lsoa-layer-toggle__label">LSOA layer</span>
+      <span class="lsoa-layer-toggle__track" :class="{ 'lsoa-layer-toggle__track--on': lsoaVisible }" @click="toggleLSOALayer">
+        <span class="lsoa-layer-toggle__thumb"></span>
+      </span>
+    </label>
+
+    <!-- LSOA hover tooltip -->
+    <div
+      v-if="hoveredLSOAFeature && enableLSOAInteraction"
+      class="lsoa-tooltip"
+      :style="{ left: tooltipPos.x + 'px', top: tooltipPos.y + 'px' }"
+    >
+      {{ hoveredLSOAFeature.LSOA21NM }}
+    </div>
+
     <div style="position: absolute; top: 10px; right: 10px; background: white; padding: 10px; border: 1px solid #ccc; font-size: 12px; z-index: 1000;">
       <div>Drawer isOpen: {{ isOpen }}</div>
       <div>Selected ID: {{ selectedIcon?.id || 'none' }}</div>
@@ -9,6 +27,7 @@
       <div>Map Loaded: {{ mapLoaded ? 'Yes' : 'No' }}</div>
       <div>Data Features: {{ dataFeatureCount }}</div>
       <div>Active Overlay: {{ activeOverlay || 'none' }}</div>
+      <div v-if="showLSOA">LSOA Loaded: {{ lsoaLoaded ? 'Yes' : 'No' }}</div>
     </div>
     <Drawer :direction="'right'" :isOpen="isOpen" class="layout-drawer">
       <template #header>
@@ -29,10 +48,48 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount, computed, watch } from 'vue'
 import maplibregl from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
 import Drawer from '../Drawer.vue'
+
+const emit = defineEmits(['lsoaSelect', 'lsoaDeselect'])
+
+const props = defineProps({
+  city: {
+    type: String,
+    default: 'liverpool',
+    validator: (value) => ['liverpool', 'southampton'].includes(value)
+  },
+  showLSOA: {
+    type: Boolean,
+    default: false
+  },
+  lsoaFillColor: {
+    type: String,
+    default: '#1a7fa0'
+  },
+  lsoaLineColor: {
+    type: String,
+    default: '#125f7a'
+  },
+  lsoaFillOpacity: {
+    type: Number,
+    default: 0.15
+  },
+  showDistrictBoundaries: {
+    type: Boolean,
+    default: true
+  },
+  attendanceThreshold: {
+    type: Number,
+    default: 0
+  },
+  enableLSOAInteraction: {
+    type: Boolean,
+    default: false
+  }
+})
 
 const mapContainer = ref(null)
 const map = ref(null)
@@ -56,9 +113,180 @@ const singlePointMarkers = new Map()
 
 const selectedIcon = ref(null)
 const isOpen = ref(false)
+const lsoaVisible = ref(true)
+const lsoaLoaded = ref(false)
+const allUnitsData = ref(null) // Store full unfiltered dataset
+let hoveredLSOAId = null // Track hovered LSOA feature
+const hoveredLSOAFeature = ref(null) // Store hovered LSOA feature properties
+const tooltipPos = ref({ x: 0, y: 0 }) // Tooltip position
 
 // Cache for loaded boundary GeoJSON
 const boundaryCache = new Map()
+
+// LSOA layer IDs
+const LSOA_SOURCE_ID = 'lsoa-source'
+const LSOA_FILL_LAYER = 'lsoa-fill'
+const LSOA_LINE_LAYER = 'lsoa-line'
+
+function toggleLSOALayer() {
+  if (!map.value || !lsoaLoaded.value) return
+  lsoaVisible.value = !lsoaVisible.value
+  const visibility = lsoaVisible.value ? 'visible' : 'none'
+  if (map.value.getLayer(LSOA_FILL_LAYER)) {
+    map.value.setLayoutProperty(LSOA_FILL_LAYER, 'visibility', visibility)
+  }
+  if (map.value.getLayer(LSOA_LINE_LAYER)) {
+    map.value.setLayoutProperty(LSOA_LINE_LAYER, 'visibility', visibility)
+  }
+}
+
+function setupLSOAInteraction() {
+  if (!map.value) return
+
+  // Hover effects
+  map.value.on('mouseenter', LSOA_FILL_LAYER, () => {
+    map.value.getCanvas().style.cursor = 'pointer'
+  })
+
+  map.value.on('mousemove', LSOA_FILL_LAYER, (e) => {
+    if (!e.features?.length) return
+
+    const feature = e.features[0]
+    const id = feature.id
+
+    if (hoveredLSOAId !== null && hoveredLSOAId !== id) {
+      map.value.setFeatureState({ source: LSOA_SOURCE_ID, id: hoveredLSOAId }, { hover: false })
+    }
+
+    hoveredLSOAId = id
+    map.value.setFeatureState({ source: LSOA_SOURCE_ID, id: hoveredLSOAId }, { hover: true })
+
+    // Update tooltip
+    hoveredLSOAFeature.value = feature.properties
+    tooltipPos.value = { x: e.point.x + 12, y: e.point.y - 8 }
+  })
+
+  map.value.on('mouseleave', LSOA_FILL_LAYER, () => {
+    map.value.getCanvas().style.cursor = ''
+    if (hoveredLSOAId !== null) {
+      map.value.setFeatureState({ source: LSOA_SOURCE_ID, id: hoveredLSOAId }, { hover: false })
+      hoveredLSOAId = null
+    }
+    // Clear tooltip
+    hoveredLSOAFeature.value = null
+  })
+
+  // Click to select LSOA
+  map.value.on('click', LSOA_FILL_LAYER, (e) => {
+    if (!e.features?.length) return
+    const feature = e.features[0].properties
+    emit('lsoaSelect', feature)
+  })
+}
+
+function updateDataByAttendanceThreshold() {
+  if (!map.value || !allUnitsData.value) return
+
+  const source = map.value.getSource(sourceId)
+  if (!source) return
+
+  // Filter features based on attendance threshold
+  const filteredFeatures = allUnitsData.value.features.filter(feature => {
+    const attendance = feature.properties?.attendance ?? 100
+    return attendance >= props.attendanceThreshold
+  })
+
+  const filteredData = {
+    type: 'FeatureCollection',
+    features: filteredFeatures
+  }
+
+  // Update the source data
+  source.setData(filteredData)
+  dataFeatureCount.value = filteredFeatures.length
+
+  console.log(`Filtered to ${filteredFeatures.length} features (threshold: ${props.attendanceThreshold}%)`)
+
+  // Update markers
+  updateHtmlClusters()
+  updateSinglePointPies()
+}
+
+async function loadLSOALayer() {
+  if (!map.value || !props.showLSOA) return
+
+  try {
+    console.log('Loading LSOA boundaries...')
+    const response = await fetch('./geo/LSOA.geojson')
+    if (!response.ok) {
+      console.warn('Could not load LSOA GeoJSON')
+      return
+    }
+
+    const geojson = await response.json()
+
+    // Add LSOA source
+    if (!map.value.getSource(LSOA_SOURCE_ID)) {
+      map.value.addSource(LSOA_SOURCE_ID, {
+        type: 'geojson',
+        data: geojson,
+        generateId: true // Required for feature-state to work
+      })
+    }
+
+    // Add LSOA fill layer (below clusters)
+    if (!map.value.getLayer(LSOA_FILL_LAYER)) {
+      map.value.addLayer({
+        id: LSOA_FILL_LAYER,
+        type: 'fill',
+        source: LSOA_SOURCE_ID,
+        paint: {
+          'fill-color': props.lsoaFillColor,
+          'fill-opacity': props.lsoaFillOpacity
+        }
+      }, 'unclustered-points') // Add before the cluster layer
+    }
+
+    // Add LSOA line layer
+    if (!map.value.getLayer(LSOA_LINE_LAYER)) {
+      map.value.addLayer({
+        id: LSOA_LINE_LAYER,
+        type: 'line',
+        source: LSOA_SOURCE_ID,
+        paint: {
+          'line-color': props.lsoaLineColor,
+          'line-width': 1,
+          'line-opacity': 0.6
+        }
+      }, 'unclustered-points')
+    }
+
+    // Add hover layer for visual feedback
+    const LSOA_HOVER_LAYER = 'lsoa-hover'
+    if (!map.value.getLayer(LSOA_HOVER_LAYER)) {
+      map.value.addLayer({
+        id: LSOA_HOVER_LAYER,
+        type: 'line',
+        source: LSOA_SOURCE_ID,
+        paint: {
+          'line-color': '#1a7fa0',
+          'line-width': 3,
+          'line-opacity': ['case', ['boolean', ['feature-state', 'hover'], false], 1, 0]
+        }
+      }, 'unclustered-points')
+    }
+
+    // Setup LSOA interaction if enabled
+    if (props.enableLSOAInteraction) {
+      setupLSOAInteraction()
+    }
+
+    lsoaLoaded.value = true
+    console.log('LSOA layer loaded successfully')
+  } catch (err) {
+    console.error('Error loading LSOA layer:', err)
+  }
+}
 
 async function loadBoundaryGeoJSON(type, name) {
   // type: 'districts' or 'units'
@@ -403,40 +631,132 @@ function clearSinglePointMarkers() {
 }
 
 function colourForCat(cat) {
-  return cat === 'A' ? '#21529A' : cat === 'B' ? '#43972A' : cat === 'C' ? '#D4732D' : '#B02418'
+  // Map categories to attendance-based colors
+  // A = SPA (50.1-85%), B = PA (85.1-90%), C = At Risk (90.1-95%), D = On Target (95.1%+)
+  return cat === 'A' ? '#7C4336' : cat === 'B' ? '#B36351' : cat === 'C' ? '#FED74E' : '#559A47'
 }
 
-// Hardcoded L1 postcodes for testing
-const L1_POSTCODES = [
-  "L1 0AA", "L1 0AB", "L1 0AE", "L1 0AF", "L1 0AG", "L1 0AH", "L1 0AJ", "L1 0AN", "L1 0AQ", "L1 0AR",
-  "L1 0AS", "L1 0AT", "L1 0AU", "L1 0AX", "L1 0AY", "L1 0AZ", "L1 0BE", "L1 0BG", "L1 0BL", "L1 0BN",
-  "L1 0BP", "L1 0BS", "L1 0BT", "L1 0BW", "L1 0BY", "L1 0DA", "L1 0DB", "L1 0DF", "L1 0DH", "L1 0DN",
-  "L1 1DA", "L1 1DE", "L1 1DF", "L1 1DG", "L1 1DJ", "L1 1DN", "L1 1DP", "L1 1DQ", "L1 1DS", "L1 1EB",
-  "L1 1ED", "L1 1EE", "L1 1EF", "L1 1EJ", "L1 1EL", "L1 1EP", "L1 1EQ", "L1 1FS", "L1 1HF", "L1 1HL",
-  "L1 1HQ", "L1 1HU", "L1 1HW", "L1 1JA", "L1 1JD", "L1 1JE", "L1 1JF", "L1 1JJ", "L1 1JN", "L1 1JP",
-  "L1 1JQ", "L1 1JR", "L1 1JT", "L1 1JW", "L1 1LD", "L1 1LE", "L1 1LG", "L1 1LH", "L1 1LJ", "L1 1LN",
-  "L1 1LP", "L1 1LQ", "L1 1LR", "L1 1LS", "L1 1LT", "L1 1LU", "L1 1LW", "L1 1LX", "L1 1LY", "L1 1LZ",
-  "L1 1NA", "L1 1NB", "L1 1ND", "L1 1NE", "L1 1NG", "L1 1NH", "L1 1NN", "L1 1NP", "L1 1NQ", "L1 1NT",
-  "L1 1NW", "L1 1NY", "L1 1PW", "L1 1QE", "L1 1QR", "L1 1QY", "L1 1RD", "L1 1RG", "L1 1RH", "L1 1RJ",
-  "L1 1RL", "L1 1RQ", "L1 2SA", "L1 2SD", "L1 2SE", "L1 2SF", "L1 2SG", "L1 2SJ", "L1 2SP", "L1 2SR",
-  "L1 2SS", "L1 2ST", "L1 2SU", "L1 2SX", "L1 2TE", "L1 2TQ", "L1 2TR", "L1 2TZ", "L1 2UA", "L1 3AG",
-  "L1 3AP", "L1 3AW", "L1 3AY", "L1 5HY", "L1 5HZ", "L1 5JD", "L1 5JE", "L1 5JH", "L1 5JJ", "L1 5JL",
-  "L1 5JN", "L1 5JP", "L1 5JR", "L1 5JW", "L1 6AA", "L1 6AE", "L1 6AF", "L1 6AL", "L1 6AU", "L1 6BA",
-  "L1 6BB", "L1 6BD", "L1 6BG", "L1 6BL", "L1 6BQ", "L1 6BR", "L1 6BU", "L1 6BW", "L1 6BX", "L1 6DA",
-  "L1 6DE", "L1 6DG", "L1 6DP", "L1 6DQ", "L1 6DS", "L1 6DT", "L1 6DX", "L1 6DZ", "L1 6EG", "L1 6ER",
-  "L1 6HB", "L1 6JB", "L1 6JD", "L1 6LD", "L1 6RA", "L1 7AG", "L1 7AY", "L1 7AZ", "L1 7BA", "L1 7BG",
-  "L1 7BJ", "L1 7BL", "L1 7BP", "L1 7BR", "L1 7BS", "L1 7BT", "L1 7BW", "L1 7BX", "L1 7BY", "L1 7BZ",
-  "L1 8AA", "L1 8AD", "L1 8AE", "L1 8AF", "L1 8AG", "L1 8AH", "L1 8AJ", "L1 8AL", "L1 8AN", "L1 8AP",
-  "L1 8BJ", "L1 8BN", "L1 8BQ", "L1 8BU", "L1 8DA", "L1 8DB", "L1 8DE", "L1 8DG", "L1 8DL", "L1 8DN",
-  "L1 8DP", "L1 8DQ", "L1 8DS", "L1 8DT", "L1 8DW", "L1 8DX", "L1 8DZ", "L1 8EE", "L1 8EF", "L1 8HG",
-  "L1 8JF", "L1 8JQ", "L1 8JS", "L1 8JU", "L1 8JX", "L1 8LB", "L1 8LJ", "L1 8LN", "L1 8LP", "L1 8LT",
-  "L1 8LU", "L1 8LW", "L1 8LY", "L1 8LZ", "L1 8ND", "L1 9AA", "L1 9AD", "L1 9AF", "L1 9AH", "L1 9AJ",
-  "L1 9AL", "L1 9AR", "L1 9AS", "L1 9AT", "L1 9AW", "L1 9AX", "L1 9BB", "L1 9BE", "L1 9BG", "L1 9BH",
-  "L1 9BP", "L1 9BQ", "L1 9BR", "L1 9BT", "L1 9BU", "L1 9BW", "L1 9BX", "L1 9BY", "L1 9BZ", "L1 9DA",
-  "L1 9DB", "L1 9DE", "L1 9DF", "L1 9DH", "L1 9DN", "L1 9DP", "L1 9DS", "L1 9DT", "L1 9DU", "L1 9DW",
-  "L1 9DY", "L1 9DZ", "L1 9ED", "L1 9EF", "L1 9EH", "L1 9EN", "L1 9ER", "L1 9EW", "L1 9EX", "L1 9HB",
-  "L1 9HD", "L1 9HE", "L1 9HF", "L1 9JD", "L1 9JF", "L1 9JG"
-]
+// City configurations
+const CITY_CONFIGS = {
+  liverpool: {
+    center: [-2.9850, 53.4065],
+    zoom: 12,
+    district: 'L1',
+    postcodes: [
+      "L1 0AA", "L1 0AB", "L1 0AE", "L1 0AF", "L1 0AG", "L1 0AH", "L1 0AJ", "L1 0AN", "L1 0AQ", "L1 0AR",
+      "L1 0AS", "L1 0AT", "L1 0AU", "L1 0AX", "L1 0AY", "L1 0AZ", "L1 0BE", "L1 0BG", "L1 0BL", "L1 0BN",
+      "L1 0BP", "L1 0BS", "L1 0BT", "L1 0BW", "L1 0BY", "L1 0DA", "L1 0DB", "L1 0DF", "L1 0DH", "L1 0DN",
+      "L1 1DA", "L1 1DE", "L1 1DF", "L1 1DG", "L1 1DJ", "L1 1DN", "L1 1DP", "L1 1DQ", "L1 1DS", "L1 1EB",
+      "L1 1ED", "L1 1EE", "L1 1EF", "L1 1EJ", "L1 1EL", "L1 1EP", "L1 1EQ", "L1 1FS", "L1 1HF", "L1 1HL",
+      "L1 1HQ", "L1 1HU", "L1 1HW", "L1 1JA", "L1 1JD", "L1 1JE", "L1 1JF", "L1 1JJ", "L1 1JN", "L1 1JP",
+      "L1 1JQ", "L1 1JR", "L1 1JT", "L1 1JW", "L1 1LD", "L1 1LE", "L1 1LG", "L1 1LH", "L1 1LJ", "L1 1LN",
+      "L1 1LP", "L1 1LQ", "L1 1LR", "L1 1LS", "L1 1LT", "L1 1LU", "L1 1LW", "L1 1LX", "L1 1LY", "L1 1LZ",
+      "L1 1NA", "L1 1NB", "L1 1ND", "L1 1NE", "L1 1NG", "L1 1NH", "L1 1NN", "L1 1NP", "L1 1NQ", "L1 1NT",
+      "L1 1NW", "L1 1NY", "L1 1PW", "L1 1QE", "L1 1QR", "L1 1QY", "L1 1RD", "L1 1RG", "L1 1RH", "L1 1RJ",
+      "L1 1RL", "L1 1RQ", "L1 2SA", "L1 2SD", "L1 2SE", "L1 2SF", "L1 2SG", "L1 2SJ", "L1 2SP", "L1 2SR",
+      "L1 2SS", "L1 2ST", "L1 2SU", "L1 2SX", "L1 2TE", "L1 2TQ", "L1 2TR", "L1 2TZ", "L1 2UA", "L1 3AG",
+      "L1 3AP", "L1 3AW", "L1 3AY", "L1 5HY", "L1 5HZ", "L1 5JD", "L1 5JE", "L1 5JH", "L1 5JJ", "L1 5JL",
+      "L1 5JN", "L1 5JP", "L1 5JR", "L1 5JW", "L1 6AA", "L1 6AE", "L1 6AF", "L1 6AL", "L1 6AU", "L1 6BA",
+      "L1 6BB", "L1 6BD", "L1 6BG", "L1 6BL", "L1 6BQ", "L1 6BR", "L1 6BU", "L1 6BW", "L1 6BX", "L1 6DA",
+      "L1 6DE", "L1 6DG", "L1 6DP", "L1 6DQ", "L1 6DS", "L1 6DT", "L1 6DX", "L1 6DZ", "L1 6EG", "L1 6ER",
+      "L1 6HB", "L1 6JB", "L1 6JD", "L1 6LD", "L1 6RA", "L1 7AG", "L1 7AY", "L1 7AZ", "L1 7BA", "L1 7BG",
+      "L1 7BJ", "L1 7BL", "L1 7BP", "L1 7BR", "L1 7BS", "L1 7BT", "L1 7BW", "L1 7BX", "L1 7BY", "L1 7BZ",
+      "L1 8AA", "L1 8AD", "L1 8AE", "L1 8AF", "L1 8AG", "L1 8AH", "L1 8AJ", "L1 8AL", "L1 8AN", "L1 8AP",
+      "L1 8BJ", "L1 8BN", "L1 8BQ", "L1 8BU", "L1 8DA", "L1 8DB", "L1 8DE", "L1 8DG", "L1 8DL", "L1 8DN",
+      "L1 8DP", "L1 8DQ", "L1 8DS", "L1 8DT", "L1 8DW", "L1 8DX", "L1 8DZ", "L1 8EE", "L1 8EF", "L1 8HG",
+      "L1 8JF", "L1 8JQ", "L1 8JS", "L1 8JU", "L1 8JX", "L1 8LB", "L1 8LJ", "L1 8LN", "L1 8LP", "L1 8LT",
+      "L1 8LU", "L1 8LW", "L1 8LY", "L1 8LZ", "L1 8ND", "L1 9AA", "L1 9AD", "L1 9AF", "L1 9AH", "L1 9AJ",
+      "L1 9AL", "L1 9AR", "L1 9AS", "L1 9AT", "L1 9AW", "L1 9AX", "L1 9BB", "L1 9BE", "L1 9BG", "L1 9BH",
+      "L1 9BP", "L1 9BQ", "L1 9BR", "L1 9BT", "L1 9BU", "L1 9BW", "L1 9BX", "L1 9BY", "L1 9BZ", "L1 9DA",
+      "L1 9DB", "L1 9DE", "L1 9DF", "L1 9DH", "L1 9DN", "L1 9DP", "L1 9DS", "L1 9DT", "L1 9DU", "L1 9DW",
+      "L1 9DY", "L1 9DZ", "L1 9ED", "L1 9EF", "L1 9EH", "L1 9EN", "L1 9ER", "L1 9EW", "L1 9EX", "L1 9HB",
+      "L1 9HD", "L1 9HE", "L1 9HF", "L1 9JD", "L1 9JF", "L1 9JG"
+    ],
+    duplicatePostcodes: {
+      'L1 0AA': 8,
+      'L1 1DA': 6,
+      'L1 1JA': 5,
+      'L1 2SA': 7,
+      'L1 6AA': 5,
+      'L1 8AA': 6,
+      'L1 9AA': 9
+    }
+  },
+  southampton: {
+    center: [-1.4044, 50.9097],
+    zoom: 12,
+    district: 'SO14',
+    postcodes: [
+      "SO14 0AA", "SO14 0AB", "SO14 0AD", "SO14 0AE", "SO14 0AF", "SO14 0AG", "SO14 0AH", "SO14 0AJ", "SO14 0AL", "SO14 0AN",
+      "SO14 0AP", "SO14 0AQ", "SO14 0AR", "SO14 0AS", "SO14 0AT", "SO14 0AU", "SO14 0AW", "SO14 0AX", "SO14 0AY", "SO14 0AZ",
+      "SO14 0BA", "SO14 0BB", "SO14 0BD", "SO14 0BE", "SO14 0BG", "SO14 0BH", "SO14 0BJ", "SO14 0BL", "SO14 0BN", "SO14 0BP",
+      "SO14 1AA", "SO14 1AB", "SO14 1AD", "SO14 1AE", "SO14 1AF", "SO14 1AG", "SO14 1AH", "SO14 1AJ", "SO14 1AL", "SO14 1AN",
+      "SO14 1AP", "SO14 1AQ", "SO14 1AR", "SO14 1AS", "SO14 1AT", "SO14 1AU", "SO14 1AW", "SO14 1AX", "SO14 1AY", "SO14 1AZ",
+      "SO15 0AA", "SO15 0AB", "SO15 0AD", "SO15 0AE", "SO15 0AF", "SO15 0AG", "SO15 0AH", "SO15 0AJ", "SO15 0AL", "SO15 0AN",
+      "SO15 1AA", "SO15 1AB", "SO15 1AD", "SO15 1AE", "SO15 1AF", "SO15 1AG", "SO15 1AH", "SO15 1AJ", "SO15 1AL", "SO15 1AN",
+      "SO15 1AP", "SO15 1AQ", "SO15 1AR", "SO15 1AS", "SO15 1AT", "SO15 1AU", "SO15 1AW", "SO15 1AX", "SO15 1AY", "SO15 1AZ",
+      "SO15 2AA", "SO15 2AB", "SO15 2AD", "SO15 2AE", "SO15 2AF", "SO15 2AG", "SO15 2AH", "SO15 2AJ", "SO15 2AL", "SO15 2AN",
+      "SO15 2AP", "SO15 2AQ", "SO15 2AR", "SO15 2AS", "SO15 2AT", "SO15 2AU", "SO15 2AW", "SO15 2AX", "SO15 2AY", "SO15 2AZ",
+      "SO16 0AA", "SO16 0AB", "SO16 0AD", "SO16 0AE", "SO16 0AF", "SO16 0AG", "SO16 0AH", "SO16 0AJ", "SO16 0AL", "SO16 0AN",
+      "SO16 0AP", "SO16 0AQ", "SO16 0AR", "SO16 0AS", "SO16 0AT", "SO16 0AU", "SO16 0AW", "SO16 0AX", "SO16 0AY", "SO16 0AZ",
+      "SO16 1AA", "SO16 1AB", "SO16 1AD", "SO16 1AE", "SO16 1AF", "SO16 1AG", "SO16 1AH", "SO16 1AJ", "SO16 1AL", "SO16 1AN",
+      "SO16 2AA", "SO16 2AB", "SO16 2AD", "SO16 2AE", "SO16 2AF", "SO16 2AG", "SO16 2AH", "SO16 2AJ", "SO16 2AL", "SO16 2AN",
+      "SO17 1AA", "SO17 1AB", "SO17 1AD", "SO17 1AE", "SO17 1AF", "SO17 1AG", "SO17 1AH", "SO17 1AJ", "SO17 1AL", "SO17 1AN",
+      "SO17 1AP", "SO17 1AQ", "SO17 1AR", "SO17 1AS", "SO17 1AT", "SO17 1AU", "SO17 1AW", "SO17 1AX", "SO17 1AY", "SO17 1AZ",
+      "SO17 2AA", "SO17 2AB", "SO17 2AD", "SO17 2AE", "SO17 2AF", "SO17 2AG", "SO17 2AH", "SO17 2AJ", "SO17 2AL", "SO17 2AN",
+      "SO17 2AP", "SO17 2AQ", "SO17 2AR", "SO17 2AS", "SO17 2AT", "SO17 2AU", "SO17 2AW", "SO17 2AX", "SO17 2AY", "SO17 2AZ",
+      "SO17 3AA", "SO17 3AB", "SO17 3AD", "SO17 3AE", "SO17 3AF", "SO17 3AG", "SO17 3AH", "SO17 3AJ", "SO17 3AL", "SO17 3AN",
+      "SO18 1AA", "SO18 1AB", "SO18 1AD", "SO18 1AE", "SO18 1AF", "SO18 1AG", "SO18 1AH", "SO18 1AJ", "SO18 1AL", "SO18 1AN",
+      "SO18 1AP", "SO18 1AQ", "SO18 1AR", "SO18 1AS", "SO18 1AT", "SO18 1AU", "SO18 1AW", "SO18 1AX", "SO18 1AY", "SO18 1AZ",
+      "SO18 2AA", "SO18 2AB", "SO18 2AD", "SO18 2AE", "SO18 2AF", "SO18 2AG", "SO18 2AH", "SO18 2AJ", "SO18 2AL", "SO18 2AN",
+      "SO18 3AA", "SO18 3AB", "SO18 3AD", "SO18 3AE", "SO18 3AF", "SO18 3AG", "SO18 3AH", "SO18 3AJ", "SO18 3AL", "SO18 3AN",
+      "SO19 1AA", "SO19 1AB", "SO19 1AD", "SO19 1AE", "SO19 1AF", "SO19 1AG", "SO19 1AH", "SO19 1AJ", "SO19 1AL", "SO19 1AN",
+      "SO19 1AP", "SO19 1AQ", "SO19 1AR", "SO19 1AS", "SO19 1AT", "SO19 1AU", "SO19 1AW", "SO19 1AX", "SO19 1AY", "SO19 1AZ",
+      "SO19 2AA", "SO19 2AB", "SO19 2AD", "SO19 2AE", "SO19 2AF", "SO19 2AG", "SO19 2AH", "SO19 2AJ", "SO19 2AL", "SO19 2AN",
+      "SO19 2AP", "SO19 2AQ", "SO19 2AR", "SO19 2AS", "SO19 2AT", "SO19 2AU", "SO19 2AW", "SO19 2AX", "SO19 2AY", "SO19 2AZ"
+    ],
+    duplicatePostcodes: {
+      'SO14 0AA': 7,
+      'SO14 1AA': 6,
+      'SO15 1AA': 5,
+      'SO16 0AA': 8,
+      'SO17 1AA': 5,
+      'SO18 1AA': 6,
+      'SO19 1AA': 9
+    }
+  }
+}
+
+// Get current city configuration
+const cityConfig = computed(() => CITY_CONFIGS[props.city] || CITY_CONFIGS.liverpool)
+
+// Generate realistic UK school attendance percentage
+// Distribution: ~5% SPA (<85%), ~12% PA (85-90%), ~25% At Risk (90-95%), ~58% On Target (95%+)
+function generateAttendancePercentage() {
+  const rand = Math.random()
+
+  if (rand < 0.05) {
+    // SPA: 50.1 - 85%
+    return 50.1 + Math.random() * 34.9
+  } else if (rand < 0.17) {
+    // PA: 85.1 - 90%
+    return 85.1 + Math.random() * 4.9
+  } else if (rand < 0.42) {
+    // At Risk of PA: 90.1 - 95%
+    return 90.1 + Math.random() * 4.9
+  } else {
+    // On Target: 95.1% - 100%
+    return 95.1 + Math.random() * 4.9
+  }
+}
+
+// Map attendance percentage to category
+function attendanceToCategory(attendance) {
+  if (attendance <= 85) return 'A'      // SPA
+  if (attendance <= 90) return 'B'      // PA
+  if (attendance <= 95) return 'C'      // At Risk of PA
+  return 'D'                            // On Target
+}
 
 // Helper to get centroid from polygon coordinates
 function getCentroidFromCoords(geometry) {
@@ -465,38 +785,27 @@ function getCentroidFromCoords(geometry) {
 }
 
 async function generateUnitsFromGeoJSON() {
-  const cats = ['A', 'B', 'C', 'D']
   const features = []
-  
-  // Postcodes that will have multiple units (simulating multiple flats/offices at same address)
-  const DUPLICATE_POSTCODES = {
-    'L1 0AA': 8,  // 8 units at this postcode
-    'L1 1DA': 6,  // 6 units
-    'L1 1JA': 5,  // 5 units
-    'L1 2SA': 7,  // 7 units
-    'L1 6AA': 5,  // 5 units
-    'L1 8AA': 6,  // 6 units
-    'L1 9AA': 9,  // 9 units
-  }
-  
-  console.log('Loading L1 GeoJSON to generate unit positions...')
-  
+  const config = cityConfig.value
+
+  console.log(`Loading ${config.district} GeoJSON to generate unit positions...`)
+
   try {
-    const response = await fetch('./geo/postcodes/units/L1.geojson')
+    const response = await fetch(`./geo/postcodes/units/${config.district}.geojson`)
     if (!response.ok) {
-      console.warn('Could not load L1 GeoJSON, falling back to spiral pattern')
+      console.warn(`Could not load ${config.district} GeoJSON, falling back to spiral pattern`)
       return null
     }
-    
+
     const geojson = await response.json()
-    
+
     if (geojson.type !== 'FeatureCollection' || !geojson.features) {
       console.warn('Invalid GeoJSON format')
       return null
     }
-    
-    console.log(`Loaded ${geojson.features.length} features from L1.geojson`)
-    
+
+    console.log(`Loaded ${geojson.features.length} features from ${config.district}.geojson`)
+
     // Create a map of postcode -> feature for quick lookup
     const postcodeMap = new Map()
     geojson.features.forEach(f => {
@@ -505,49 +814,51 @@ async function generateUnitsFromGeoJSON() {
         postcodeMap.set(postcode.trim().toUpperCase(), f)
       }
     })
-    
+
     console.log(`Mapped ${postcodeMap.size} postcodes`)
-    
+
     let unitIndex = 0
-    
-    // Generate features for each of our hardcoded postcodes
-    L1_POSTCODES.forEach((postcode) => {
+
+    // Generate features for each postcode in config
+    config.postcodes.forEach((postcode) => {
       const feature = postcodeMap.get(postcode.toUpperCase())
-      
+
       if (feature && feature.geometry) {
         const centroid = getCentroidFromCoords(feature.geometry)
-        
+
         if (centroid) {
           // Check if this postcode should have duplicates
-          const duplicateCount = DUPLICATE_POSTCODES[postcode] || 1
-          
+          const duplicateCount = config.duplicatePostcodes[postcode] || 1
+
           for (let i = 0; i < duplicateCount; i++) {
-            const cat = cats[Math.floor(Math.random() * cats.length)]
             const isDuplicate = duplicateCount > 1
-            
+            const attendance = generateAttendancePercentage()
+            const cat = attendanceToCategory(attendance)
+
             // Add tiny offset for duplicates so they're not exactly stacked
             // (but small enough they'll still cluster)
             const offset = isDuplicate ? (i * 0.00001) : 0
-            
+
             features.push({
               type: 'Feature',
               properties: {
                 id: `unit-${unitIndex}`,
                 cat,
-                district: 'L1',
+                district: config.district,
                 unit: postcode,
                 title: isDuplicate ? `Unit ${i + 1} at ${postcode}` : `Unit ${postcode}`,
                 isUnit: true,
                 isDuplicate: isDuplicate,
                 unitNumber: isDuplicate ? i + 1 : null,
-                totalUnitsAtPostcode: duplicateCount
+                totalUnitsAtPostcode: duplicateCount,
+                attendance: Number(attendance.toFixed(1))
               },
               geometry: {
                 type: 'Point',
                 coordinates: [centroid[0] + offset, centroid[1] + offset]
               }
             })
-            
+
             unitIndex++
           }
         } else {
@@ -557,9 +868,9 @@ async function generateUnitsFromGeoJSON() {
         console.warn(`No matching feature found for ${postcode}`)
       }
     })
-    
-    console.log(`Generated ${features.length} units from GeoJSON centroids (including ${Object.values(DUPLICATE_POSTCODES).reduce((a, b) => a + b, 0) - Object.keys(DUPLICATE_POSTCODES).length} duplicates)`)
-    
+
+    console.log(`Generated ${features.length} units from GeoJSON centroids (including ${Object.values(config.duplicatePostcodes).reduce((a, b) => a + b, 0) - Object.keys(config.duplicatePostcodes).length} duplicates)`)
+
     return {
       type: 'FeatureCollection',
       features
@@ -572,30 +883,32 @@ async function generateUnitsFromGeoJSON() {
 
 function generateFallbackUnits() {
   // This is now just a fallback if GeoJSON loading fails
-  const cats = ['A', 'B', 'C', 'D']
   const features = []
-  const center = [-2.9916, 53.4084]
-  
+  const config = cityConfig.value
+  const center = config.center
+
   console.log('Generating fallback spiral units (GeoJSON not available)...')
-  
-  L1_POSTCODES.forEach((postcode, index) => {
-    const angle = (index / L1_POSTCODES.length) * Math.PI * 6
-    const distance = 0.002 + (index / L1_POSTCODES.length) * 0.008
-    
+
+  config.postcodes.forEach((postcode, index) => {
+    const angle = (index / config.postcodes.length) * Math.PI * 6
+    const distance = 0.002 + (index / config.postcodes.length) * 0.008
+
     const lng = center[0] + Math.cos(angle) * distance / Math.cos((center[1] * Math.PI) / 180)
     const lat = center[1] + Math.sin(angle) * distance
-    
-    const cat = cats[Math.floor(Math.random() * cats.length)]
-    
+
+    const attendance = generateAttendancePercentage()
+    const cat = attendanceToCategory(attendance)
+
     features.push({
       type: 'Feature',
       properties: {
         id: `unit-${index}`,
         cat,
-        district: 'L1',
+        district: config.district,
         unit: postcode,
         title: `Unit ${postcode}`,
-        isUnit: true
+        isUnit: true,
+        attendance: Number(attendance.toFixed(1))
       },
       geometry: {
         type: 'Point',
@@ -603,7 +916,7 @@ function generateFallbackUnits() {
       }
     })
   })
-  
+
   return {
     type: 'FeatureCollection',
     features
@@ -613,10 +926,10 @@ function generateFallbackUnits() {
 function makeDonutSvg({ a = 0, b = 0, c = 0, d = 0, isSinglePoint = false, singleColor = null }) {
   const total = a + b + c + d || 1
   const slices = [
-    { value: a, fill: '#21529A' },
-    { value: b, fill: '#43972A' },
-    { value: c, fill: '#D4732D' },
-    { value: d, fill: '#B02418' }
+    { value: a, fill: '#7C4336' },  // SPA (50.1-85%) - dark brown
+    { value: b, fill: '#B36351' },  // PA (85.1-90%) - medium red
+    { value: c, fill: '#FED74E' },  // At Risk (90.1-95%) - yellow
+    { value: d, fill: '#559A47' }   // On Target (95.1%+) - green
   ]
   const size = 64
   const cx = size / 2
@@ -689,13 +1002,13 @@ const currentOverlayType = ref(null) // 'district' or 'unit'
 const DISTRICT_ZOOM_THRESHOLD = 15
 
 // Helper to determine dominant district in a cluster
-// Since all current data is L1, we can simplify this
+// Since all current data is from a single district, we can simplify this
 async function getDominantDistrictFromCluster(clusterId, source) {
-  // For now, since all data is L1, just return L1 immediately
+  // For now, since all data is from one district, just return it immediately
   // This avoids the slow getClusterLeaves call
   // When you have multiple districts, you can uncomment the full implementation
-  
-  return 'L1'
+
+  return cityConfig.value.district
   
   /* Full implementation for multiple districts:
   return new Promise((resolve) => {
@@ -837,16 +1150,16 @@ function updateHtmlClusters() {
                 openDrawer({
                   id: `cluster-${clusterId}`,
                   title: `${immediateTotal} units at ${postcode}`,
-                  district: 'L1',
+                  district: cityConfig.value.district,
                   unit: postcode,
                   cat: `A:${immediateCategories.A}, B:${immediateCategories.B}, C:${immediateCategories.C}, D:${immediateCategories.D}`,
                   isCluster: true,
                   clusterSize: immediateTotal,
                   isMaxZoomCluster: true
                 })
-                
+
                 // Show the unit/postcode boundary instead of district
-                showUnitBoundary('L1', postcode, currentCoords)
+                showUnitBoundary(cityConfig.value.district, postcode, currentCoords)
               })
               
               return
@@ -886,9 +1199,11 @@ function updateHtmlClusters() {
           isCluster: true,
           clusterSize: immediateTotal
         })
-        
-        // Show the district boundary
-        await showDistrictBoundary(dominantDistrict, currentCoords)
+
+        // Show the district boundary if enabled
+        if (props.showDistrictBoundaries) {
+          await showDistrictBoundary(dominantDistrict, currentCoords)
+        }
       }
       
       el.addEventListener('click', onClusterClick)
@@ -1087,15 +1402,15 @@ function updateSinglePointPiesImmediate() {
           openDrawer({
             id: `stacked-${capturedPostcode}`,
             title: `${total} units at ${capturedPostcode}`,
-            district: 'L1',
+            district: cityConfig.value.district,
             unit: capturedPostcode,
             cat: `A:${currentCatCounts.A}, B:${currentCatCounts.B}, C:${currentCatCounts.C}, D:${currentCatCounts.D}`,
             isCluster: true,
             clusterSize: total,
             isStackedLocation: true
           })
-          
-          await showUnitBoundary('L1', capturedPostcode, featureCoords)
+
+          await showUnitBoundary(cityConfig.value.district, capturedPostcode, featureCoords)
         })
         
         stackedMarkers.set(postcode, marker)
@@ -1139,12 +1454,13 @@ function removeAllClusterMarkers() {
 
 onMounted(() => {
   console.log('=== Component mounting ===')
+  const config = cityConfig.value
   try {
     map.value = new maplibregl.Map({
       container: mapContainer.value,
       style: styleUrl,
-      center: [-2.9850, 53.4065],
-      zoom: 12,
+      center: config.center,
+      zoom: config.zoom,
       minZoom: 5,
       maxZoom: 18
     })
@@ -1174,14 +1490,28 @@ onMounted(() => {
       if (!unitsData || unitsData.features.length === 0) {
         unitsData = generateFallbackUnits()
       }
-      
-      dataFeatureCount.value = unitsData.features.length
-      
-      console.log('Adding source with', unitsData.features.length, 'features')
-      
+
+      // Store the full dataset
+      allUnitsData.value = unitsData
+
+      // Filter by attendance threshold
+      const filteredFeatures = unitsData.features.filter(feature => {
+        const attendance = feature.properties?.attendance ?? 100
+        return attendance >= props.attendanceThreshold
+      })
+
+      const filteredData = {
+        type: 'FeatureCollection',
+        features: filteredFeatures
+      }
+
+      dataFeatureCount.value = filteredFeatures.length
+
+      console.log(`Adding source with ${filteredFeatures.length} features (filtered from ${unitsData.features.length}, threshold: ${props.attendanceThreshold}%)`)
+
       map.value.addSource(sourceId, {
         type: 'geojson',
-        data: unitsData,
+        data: filteredData,
         cluster: true,
         clusterRadius: 60,
         clusterMaxZoom: 17,
@@ -1209,12 +1539,29 @@ onMounted(() => {
       
       map.value.on('click', (e) => {
         if (eventCameFromMarkerOrCluster(e)) return
+
+        // Check if clicked on LSOA layer
+        if (props.enableLSOAInteraction && map.value.getLayer(LSOA_FILL_LAYER)) {
+          const features = map.value.queryRenderedFeatures(e.point, { layers: [LSOA_FILL_LAYER] })
+          if (features.length > 0) return // LSOA click handled by LSOA layer handler
+        }
+
         closeDrawer()
+
+        // Emit deselect for LSOA if interaction is enabled
+        if (props.enableLSOAInteraction) {
+          emit('lsoaDeselect')
+        }
       })
       
       updateHtmlClusters()
       updateSinglePointPies()
-      
+
+      // Load LSOA layer if enabled
+      if (props.showLSOA) {
+        await loadLSOALayer()
+      }
+
       console.log('=== Map setup complete ===')
     })
     
@@ -1233,6 +1580,11 @@ onMounted(() => {
     errorMsg.value = `Map init failed: ${e?.message || String(e)}`
     console.error('Mount error:', e)
   }
+})
+
+// Watch for attendance threshold changes
+watch(() => props.attendanceThreshold, () => {
+  updateDataByAttendanceThreshold()
 })
 
 onBeforeUnmount(() => {
@@ -1301,5 +1653,71 @@ onBeforeUnmount(() => {
 
 .side-drawer.side-drawer--right:before {
   content: none !important;
+}
+
+/* LSOA layer toggle */
+.lsoa-layer-toggle {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  cursor: pointer;
+  user-select: none;
+}
+
+.lsoa-layer-toggle__label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+}
+
+.lsoa-layer-toggle__track {
+  position: relative;
+  width: 36px;
+  height: 20px;
+  background: #ccc;
+  border-radius: 10px;
+  transition: background-color 0.2s;
+  cursor: pointer;
+}
+
+.lsoa-layer-toggle__track--on {
+  background: #1a7fa0;
+}
+
+.lsoa-layer-toggle__thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background: white;
+  border-radius: 50%;
+  transition: left 0.2s;
+}
+
+.lsoa-layer-toggle__track--on .lsoa-layer-toggle__thumb {
+  left: 18px;
+}
+
+/* LSOA hover tooltip */
+.lsoa-tooltip {
+  position: absolute;
+  background: rgba(30, 30, 30, 0.85);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 1001;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 </style>
