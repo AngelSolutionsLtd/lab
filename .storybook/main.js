@@ -1,3 +1,5 @@
+import path from 'path';
+
 /** @type { import('@storybook/vue-webpack5').StorybookConfig } */
 const config = {
   stories: [
@@ -26,6 +28,15 @@ const config = {
       test: /\.scss$/,
       use: ["vue-style-loader", "css-loader", "sass-loader"],
     });
+
+    // Perspective's source imports through the `VueSrcPath` webpack alias, which
+    // resolves to `App_Vue/src` there. Pointing it at this repo's root lets files
+    // lifted straight out of production (see Modules/Filters) stay byte-identical,
+    // so re-syncing them is a plain copy rather than a rewrite of their imports.
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      VueSrcPath: path.resolve(__dirname, '..'),
+    };
 
     // Tiptap v2 packages have "type":"module" but also ship CJS builds via the
     // "require" condition in their exports map.  Putting "require" first in
