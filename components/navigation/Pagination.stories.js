@@ -6,15 +6,43 @@ export default {
   component: Pagination,
   tags: ['autodocs'],
   argTypes: {
-    loading: { control: 'boolean' },
-    maxVisibleButtons: { control: 'number' },
-    totalPages: { control: 'number' },
-    totalPagesText: { control: 'boolean' },
-    total: { control: 'number' },
-    perPage: { control: 'number' },
-    currentPage: { control: 'number' },
-    enhancedMode: { control: 'boolean' },
-    currentRowsPerPage: { control: 'select', options: [25, 50, 75] },
+    loading: {
+      control: 'boolean',
+      description: 'Disables all pagination controls while a page of data is being fetched.',
+    },
+    maxVisibleButtons: {
+      control: 'number',
+      description: 'How many numbered page links to show at once. Ignored when enhancedMode is true.',
+    },
+    totalPages: {
+      control: 'number',
+      description: 'Total number of pages available.',
+    },
+    totalPagesText: {
+      control: 'boolean',
+      description: 'Shows the "X of N pages" text alongside the controls.',
+    },
+    total: {
+      control: 'number',
+      description: 'Total number of records across all pages.',
+    },
+    perPage: {
+      control: 'number',
+      description: 'Number of records shown per page.',
+    },
+    currentPage: {
+      control: 'number',
+      description: 'The page currently being displayed.',
+    },
+    enhancedMode: {
+      control: 'boolean',
+      description: 'Switches from numbered page links to a "go to page" input, a submit button, and a rows-per-page selector.',
+    },
+    currentRowsPerPage: {
+      control: 'select',
+      options: [25, 50, 75],
+      description: 'Initial value of the rows-per-page selector.',
+    },
   },
 };
 
