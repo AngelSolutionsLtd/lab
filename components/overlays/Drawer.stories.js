@@ -7,40 +7,18 @@ export default {
   component: Drawer,
   tags: ['autodocs'],
   argTypes: {
-    isOpen: {
-      control: 'boolean',
-      description: 'Controls the drawer visibility. The drawer is fully controlled - it never closes itself, the parent owns the state.'
-    },
-    direction: {
-      control: 'select',
-      options: ['right', 'left'],
-      description: 'Side of the viewport the drawer slides in from'
-    },
-    hasSideBtn: {
-      control: 'boolean',
-      description: 'Keeps the drawer mounted while closed so a side tab/button stays visible'
-    },
-    scrollLocked: {
-      control: 'boolean',
-      description: 'Locks scrolling on the page body while the drawer is open'
-    },
-    wrapperPadding: {
-      control: 'text',
-      description: 'Utility padding class applied to the drawer wrapper'
-    },
-    alignTop: {
-      control: 'boolean',
-      description: 'Pins the drawer to the top of the viewport at full height'
-    },
-    noOverlay: {
-      control: 'boolean',
-      description: 'Hides the dimmed overlay behind the drawer'
-    },
+    isOpen: { control: 'boolean', description: 'Controls the drawer visibility. The drawer is fully controlled - it never closes itself, the parent owns the state.' },
+    direction: { control: 'select', options: ['right', 'left'], description: 'Side of the viewport the drawer slides in from' },
+    hasSideBtn: { control: 'boolean', description: 'Keeps the drawer mounted while closed so a side tab/button stays visible' },
+    scrollLocked: { control: 'boolean', description: 'Locks scrolling on the page body while the drawer is open' },
+    wrapperPadding: { control: 'text', description: 'Utility padding class applied to the drawer wrapper' },
+    alignTop: { control: 'boolean', description: 'Pins the drawer to the top of the viewport at full height' },
+    noOverlay: { control: 'boolean', description: 'Hides the dimmed overlay behind the drawer' },
     headerSlot: { control: 'text', table: { disable: true } },
     defaultSlot: { control: 'text', table: { disable: true } },
     additionalContentSlot: { control: 'text', table: { disable: true } },
-    footerSlot: { control: 'text', table: { disable: true } }
-  }
+    footerSlot: { control: 'text', table: { disable: true } },
+  },
 };
 
 const Template = (args) => ({
