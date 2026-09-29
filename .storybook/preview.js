@@ -3,6 +3,11 @@ import registerGlobalFilters from '../Modules/Filters/globalFilters.js';
 import { defaultTerminology, customisedTerminology } from './mocks/terminology.js';
 import { terminologyStore, setActiveTerminology } from './mocks/terminologyStore.js';
 
+/* Toast */
+import Toast from 'vue-toastification';
+import 'vue-toastification/dist/index.css';
+import { filterBeforeCreate } from '../Modules/toastr.js';
+
 /**
  * Production components call `$filters.terminology(...)` and would throw here
  * without it, so rather than changing the components we mimic the environment:
@@ -14,6 +19,7 @@ import { terminologyStore, setActiveTerminology } from './mocks/terminologyStore
  */
 setup((app) => {
   registerGlobalFilters(app, terminologyStore);
+  app.use(Toast, { filterBeforeCreate });
 });
 
 /** Named sets a story can ask for by string via `parameters.terminology`. */
