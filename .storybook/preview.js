@@ -2,6 +2,25 @@ import { setup } from '@storybook/vue3';
 import registerGlobalFilters from '../Modules/Filters/globalFilters.js';
 import { defaultTerminology, customisedTerminology } from './mocks/terminology.js';
 import { terminologyStore, setActiveTerminology } from './mocks/terminologyStore.js';
+import { createRouter, createWebHashHistory } from 'vue-router';
+
+const router = createRouter({
+    history: createWebHashHistory(),
+    routes: [
+    {
+      path: '/docs/components-navigation-breadcrumbnav--docs/analysis',
+      name: 'Analysis',
+      component: { template: '<div />' },
+      meta: { breadcrumb: { subdirectory: 'Analysis' } },
+    },
+    {
+      path: '/docs/components-navigation-breadcrumbnav--docs',
+      name: 'DevelopmentFeedback',
+      component: { template: '<div />' },
+      meta: { breadcrumb: { subdirectory: 'Development Feedback' } },
+    },
+  ],
+});
 
 /**
  * Production components call `$filters.terminology(...)` and would throw here
@@ -13,6 +32,7 @@ import { terminologyStore, setActiveTerminology } from './mocks/terminologyStore
  * are all available to stories on `$filters`.
  */
 setup((app) => {
+  app.use(router);
   registerGlobalFilters(app, terminologyStore);
 });
 
@@ -51,3 +71,4 @@ const preview = {
 };
 
 export default preview;
+export { router };
