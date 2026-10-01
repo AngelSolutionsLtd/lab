@@ -46,7 +46,7 @@
 </template>
 
 <script setup>
-import Scroll from "../../Modules/scroll";
+import Scroll from "../../Modules/Helpers/scroll";
 import { ref, computed, nextTick, useSlots, watch, onMounted, onUnmounted, onBeforeUnmount, useTemplateRef } from 'vue'
 
 defineOptions({
