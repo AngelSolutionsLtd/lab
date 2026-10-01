@@ -1,119 +1,144 @@
 <template>
-  <transition :name="`${direction}-drawer`">
-    <div v-if="isOpen || hasSideBtn" class="side-drawer" :class="[isOpen ? `side-drawer--${direction}-open` : '', `side-drawer--${direction}`, { 'has-side-btn': hasSideBtn, 'body-scroll-enabled': !scrollLocked, 'side-drawer--no-overlay': noOverlay }, wrapperPadding]" :style="alignTop ? 'top: 0 !important; height: 100vh !important;' : ''" ref="drawerParent">
-      <div class="side-drawer__inner" :class="{ 'side-drawer__inner-padding': isFixed }" ref="drawerChild">
-        <div v-if="hasHeader" class="side-drawer__header" :class="{ 'side-drawer__header-fixed': isFixed }">
-          <slot name="header"></slot>
-        </div>
+	<div>
+		<transition name="fade">
+            <div
+                v-if="props.isOpen && props.showOverlay"
+                class="side-drawer__overlay"
+            />
+        </transition>
 
-        <div ref="drawerBody">
-          <slot></slot>
+		<transition :name="`${direction}-drawer`">
+			<div
+				class="side-drawer"
+				:class="[props.isOpen ? `side-drawer--${props.direction}-open` : '', `side-drawer--${props.direction}`, {'has-side-btn': props.hasSideBtn}, props.wrapperPadding, $attrs.class]"
+				ref="drawer-parent"
+				v-if="props.isOpen || props.hasSideBtn"
+			>
+				<div
+					class="side-drawer__inner"
+					:class="{ 'side-drawer__inner-padding': isFixed }"
+					ref="drawer-child"
+				>
+					<div
+						v-if="hasHeader"
+						class="side-drawer__header"
+						:class="{ 'side-drawer__header-fixed': isFixed || props.stickyHeader }"
+					>
+						<slot name="header"></slot>
+					</div>
+					<div ref="body" :class="[props.bodyClasses]">
+						<slot></slot>
 
-          <slot name="additionalContent"></slot>
-        </div>
+						<slot name="additionalContent"></slot>
+					</div>
 
-        <div v-if="hasFooter" class="side-drawer__footer" :class="{ 'side-drawer__footer-fixed': isFixed }">
-          <slot name="footer"></slot>
-        </div>
-      </div>
-    </div>
-  </transition>
+					<div
+						v-if="hasFooter"
+						class="side-drawer__footer"
+						:class="{ 'side-drawer__footer-fixed': isFixed || props.hasStickyFooter }"
+					>
+						<slot name="footer"></slot>
+					</div>
+				</div>
+			</div>
+		</transition>
+	</div>
 </template>
 
 <script setup>
-import { ref, computed, watch, nextTick, onMounted, onBeforeUnmount, useSlots } from 'vue'
-import Scroll from '../../Modules/Helpers/scroll'
+import Scroll from "../../Modules/scroll";
+import { ref, computed, nextTick, useSlots, watch, onMounted, onUnmounted, onBeforeUnmount, useTemplateRef } from 'vue'
+
+defineOptions({
+	name: 'DrawerComponent',
+	inheritAttrs: false, // stop classes landing on the wrapper div
+});
 
 const props = defineProps({
-  isOpen: Boolean,
-  direction: { type: String, default: 'right' },
-  hasSideBtn: Boolean,
-  scrollLocked: { type: Boolean, default: true },
-  wrapperPadding: { type: String, default: 'py-5' },
-  alignTop: Boolean,
-  noOverlay: Boolean
-})
+	isOpen: { type: Boolean },
+	direction: { type: String, default: 'right' },
+	hasSideBtn: { type: Boolean, default: false },
+	scrollLocked: { type: Boolean, default: true },
+	wrapperPadding: { type: String, default: 'py-5' },
+	bodyClasses: { type: [String, Object], required: false, default: '' },
+	stickyHeader: { type: Boolean, default: false},
+	hasStickyFooter: { type: Boolean, default: false},
+	showOverlay: { type: Boolean, default: false},
+});
 
-const slots = useSlots()
+const scroll = new Scroll();
+const isFixed = ref(false);
+let observer = null;
 
-const drawerParent = ref(null)
-const drawerChild = ref(null)
-const drawerBody = ref(null)
-const isFixed = ref(false)
+const slots = useSlots();
 
-const scroll = new Scroll()
-let observer = null
+const hasHeader = computed(() => !!slots.header);
+const hasFooter = computed(() => !!slots.footer);
 
-const hasHeader = computed(() => !!slots.header)
-
-const hasFooter = computed(() => !!slots.footer)
+const drawerChild = useTemplateRef('drawer-child')
+const drawerParent = useTemplateRef('drawer-parent')
+const body = useTemplateRef('body')
 
 function stickyFooter() {
-  if (!hasFooter.value || !props.isOpen) return
-  if (!drawerChild.value || !drawerParent.value) return
-
-  isFixed.value = drawerChild.value.scrollHeight >= drawerParent.value.clientHeight - 30
-}
-
-function destroyObserver() {
-  if (!observer) return
-
-  observer.disconnect()
-  observer = null
+	if (hasFooter.value && props.isOpen) {
+		if (
+			drawerChild.value.scrollHeight >=
+			drawerParent.value.clientHeight - 30
+		) {
+			isFixed.value = true;
+		} else {
+			isFixed.value = false;
+		}
+	}
 }
 
 function initObserver() {
-  if (!hasFooter.value || !props.isOpen || !drawerBody.value) return
+	if (hasFooter.value && props.isOpen) {
+		const config = {
+			subtree: true,
+			childList: true,
+			threshold: 1.0
+		}
+		const callback = () => {
+			nextTick(() => {
+				handleChildrenChanged()
+			})
+		}
+		observer = new MutationObserver(callback)
+		observer.observe(body.value, config)
+	}
+}
 
-  destroyObserver()
-
-  const config = {
-    subtree: true,
-    childList: true,
-    threshold: 1.0
-  }
-
-  const callback = () => {
-    nextTick(() => {
-      stickyFooter()
-    })
-  }
-
-  observer = new MutationObserver(callback)
-  observer.observe(drawerBody.value, config)
+function handleChildrenChanged() {
+	stickyFooter();
 }
 
 watch(() => props.isOpen, (open) => {
-  if (open && props.scrollLocked) {
-    scroll.disable()
-
-    nextTick(() => {
-      initObserver()
-      stickyFooter()
-    })
-  } else {
-    destroyObserver()
-    scroll.enable()
-  }
-})
+	if (open && props.scrollLocked) {
+		scroll.disable();
+		nextTick(() => {
+			initObserver()
+			stickyFooter();
+		});
+	} else if (!open && props.scrollLocked) {
+		scroll.enable();
+	}
+});
 
 onMounted(() => {
-  nextTick(() => {
-    window.addEventListener('resize', stickyFooter)
-  })
-})
+	nextTick(() => {
+		window.addEventListener("resize", stickyFooter);
+	});
+});
 
 onBeforeUnmount(() => {
-  destroyObserver()
-  window.removeEventListener('resize', stickyFooter)
-  scroll.enable()
-})
-</script>
+	if (observer) observer.disconnect()
+});
 
-<style>
-.side-drawer--no-overlay::before,
-.side-drawer--no-overlay::after {
-  display: none !important;
-  content: none !important;
-}
-</style>
+onUnmounted(() => {
+	window.removeEventListener("resize", stickyFooter)
+	if (scroll.isDisabled) {
+		scroll.enable();
+	}
+});
+</script>
