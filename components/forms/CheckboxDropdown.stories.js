@@ -47,6 +47,7 @@ Default.args = {
   selectedContextPlural: 'colours',
   selectedContextAll: 'All colours',
   anyOptionValue: 0,
+  showControls: false,
   searchable: true,
   modelValue: [],
 };
