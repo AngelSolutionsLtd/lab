@@ -34,7 +34,7 @@ import { ref } from 'vue';
 import vSelect from 'vue-select';
 
 defineOptions({
-    name: 'StatusDropdown',
+  name: 'StatusDropdown',
 })
 
 const emit = defineEmits(["selectOption"]);
