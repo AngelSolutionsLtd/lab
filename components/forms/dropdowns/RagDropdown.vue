@@ -66,15 +66,15 @@ if (props.defaultValue) {
     selectedValue.value = props.options.find((x) => x.initial === 'N')
 }
 
-const dropdownOpen = (search, loading) => {
+const dropdownOpen = () => {
     isOpen.value = true;
 }
 
-const dropdownClosed = (search, loading) => {
+const dropdownClosed = () => {
     isOpen.value = false;
 }
 
-watch(() => props.defaultValue, (newVal, oldVal) => {
+watch(() => props.defaultValue, (newVal) => {
     if (newVal) {
         selectedValue.value = props.options.find((x) => x.id === newVal);
     }
