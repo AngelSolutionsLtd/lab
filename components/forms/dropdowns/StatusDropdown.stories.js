@@ -40,6 +40,6 @@ ReadOnly.args = {
     { id: 3, label: 'Deferred', classname: 'deferred' },
     { id: 4, label: 'Cancelled', classname: 'cancelled'},
   ],
-  defaultValue: 0,
+  defaultValue: '',
   readonly: true
 };

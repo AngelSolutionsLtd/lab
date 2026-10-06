@@ -1,9 +1,9 @@
 <template>
   <div>
     <div v-if="readonly" class="status-dropdown status-dropdown--readonly">
-      <div :class="`status-dropdown__selected status-dropdown__selected--${selectedValue.classname}`">
+      <div :class="`status-dropdown__selected status-dropdown__selected--${selectedValue?.classname}`">
         <span class="status-dropdown__circle"></span>
-        {{ selectedValue.label }}
+        {{ selectedValue?.label }}
       </div>
     </div>
     <v-select v-if="!readonly"
@@ -45,7 +45,7 @@ const props = defineProps({
     readonly: { type: Boolean, required: false },
 });
 
-const selectedValue = ref(props.options.find((x) => x.id === props.defaultValue) ?? null);
+const selectedValue = ref(props.options.find((x) => x.id === props.defaultValue) ?? props.options[0] ?? null);
 
 const setSelected = (value) => {
     emit("selectOption", value);
