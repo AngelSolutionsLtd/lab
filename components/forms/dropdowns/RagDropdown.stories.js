@@ -18,7 +18,7 @@ const Template = (args) => ({
   setup() {
     return { args };
   },
-  template: '<div style="max-width: 100px"><RagDropdown v-bind="args" /></div>',
+  template: '<div style="max-width: 400px"><RagDropdown v-bind="args" /></div>',
 });
 
 export const Default = Template.bind({});
