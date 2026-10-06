@@ -24,9 +24,9 @@ const Template = (args) => ({
 export const Default = Template.bind({});
 Default.args = {
 	options: [
-		{ id: 0, initial: 'R', label: 'Red', classname: 'red' },
-		{ id: 1, initial: 'A', label: 'Amber', classname: 'amber' },
-		{ id: 2, initial: 'G', label: 'Green', classname: 'green' },
+		{ id: 0, initial: 'O', label: 'Outstanding', classname: 'green' },
+		{ id: 1, initial: 'R', label: 'Requires Improvement', classname: 'amber' },
+		{ id: 2, initial: 'I', label: 'Inadequate', classname: 'red' },
 		{ id: 3, initial: 'N', label: 'Not Set', classname: 'not-set' },
 	],
 	condensed: false,
@@ -38,9 +38,9 @@ Default.args = {
 export const ReadOnly = Template.bind({});
 ReadOnly.args = {
 	options: [
-		{ id: 0, initial: 'R', label: 'Red', classname: 'red' },
-		{ id: 1, initial: 'A', label: 'Amber', classname: 'amber' },
-		{ id: 2, initial: 'G', label: 'Green', classname: 'green' },
+		{ id: 0, initial: 'O', label: 'Outstanding', classname: 'green' },
+		{ id: 1, initial: 'R', label: 'Requires Improvement', classname: 'amber' },
+		{ id: 2, initial: 'I', label: 'Inadequate', classname: 'red' },
 		{ id: 3, initial: 'N', label: 'Not Set', classname: 'not-set' },
 	],
 	condensed: true,
