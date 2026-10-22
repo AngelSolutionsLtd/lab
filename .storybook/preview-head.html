@@ -46,4 +46,37 @@
         max-width: 1300px;
         width: 95%;
     }
+    
+    @keyframes icon-shake {
+        5.333%   { transform: translateY(-2px); animation-timing-function: ease-in; }
+        14.333%  { transform: translateY(-0.7px); animation-timing-function: ease-in; }
+        10%, 19% { transform: none; }
+    }
+
+    @keyframes icon-tilt {
+        5.333%   { transform: rotate(20deg) translate(2px, -3px) scale(1.1); animation-timing-function: ease-in; }
+        14.333%  { transform: rotate(7deg) translate(0.7px, -1px) scale(1.035); animation-timing-function: ease-in; }
+        10%, 19% { transform: none; }
+    }
+
+    .icon-shake,
+    .icon-tilt {
+        display: inline-block;
+        will-change: transform;
+    }
+
+    .icon-shake {
+        animation: icon-shake 3s ease-out 3;
+    }
+
+    .icon-tilt {
+        animation: icon-tilt 3s ease-out 3;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .icon-shake,
+        .icon-tilt {
+            animation: none !important;
+        }
+    }
 </style>
